@@ -7,8 +7,9 @@ python -m ipykernel install --user --name gpu_env --display-name "GPU Environmen
 pip install tensorflow
 
 
-# https://docs.nvidia.com/deeplearning/cudnn/install-guide/index.html#install-zlib-windows
-
-
 # Notes:
 # Tensorflow may only be compatible with certain versions of Cuda Toolkit. Check the Anaconda logs if GPU device is not listed
+
+
+# References:
+# https://docs.nvidia.com/deeplearning/cudnn/install-guide/index.html#install-zlib-windows
