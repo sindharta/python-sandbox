@@ -22,4 +22,6 @@ pip install tensorflow==2.10
 
 pip install accelerate diffusers transformers
 
+pip install matplotlib
+
 
