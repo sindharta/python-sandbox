@@ -1,0 +1,42 @@
+{
+    "intents":
+    [
+        {
+            "tag": "greeting",
+            "patterns": ["Hello", "Hi", "I need help", "Hey"],
+            "responses": ["Hi there! How can I help?", "Hello, and welcome to this chatbot"],
+            "context_set": ""
+        },
+        {
+            "tag": "bye",
+            "patterns": ["Thank you for the help", "Bye", "Great thanks"],
+            "responses": ["Do you have any further questions?", "Thanks for asking a question"]
+        },
+        {
+            "tag": "courses",
+            "patterns": ["What are the courses available?", "Do you have courses?"],
+            "responses": ["We have courses on creative design, programming and machine learning",
+                          "We have over 300 courses available"]
+        },
+        {
+            "tag": "coding",
+            "patterns": ["What coding courses do you have?", "I want to learn programming"],
+            "responses": ["We have many courses, including Hello Coding and Python for Automation",
+                          "Check out our site listing for a complete list of courses"]
+        },
+        {
+            "tag": "machinelearning",
+            "patterns": ["What machine learning courses do you teach?", "Do you teach AI?",
+                        "I want to learn artificial intelligence"],
+            "responses": ["We have Complete Machine Learning, ChatGPT Bundle and much more",
+                          "Find top machine learning courses in our site catalogue"]
+        },
+        {
+            "tag": "creative",
+            "patterns": ["Do you teach creative courses", "Do you have non coding courses",
+                        " I want to learn something else"],
+            "responses": ["We have tons of non coding courses", "Check our site for more courses",
+                        " We teach video editing, audio production, graphic design and much more!"]
+        }
+    ]
+}
