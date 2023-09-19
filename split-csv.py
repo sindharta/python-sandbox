@@ -12,7 +12,6 @@ parser.add_argument('--include_header_row', '-r', required=False, default=False,
 
 args = parser.parse_args()
 
-test_percentage = float(args.percentage)
 input_filename = args.input
 
 # print(os.getcwd())
@@ -24,9 +23,16 @@ if not os.path.isfile(input_filename):
     isError = True
     exit()
 
-if test_percentage <= 0:
-    print(f"Invalid percentage: {test_percentage}")
+test_percentage = 0
+try:
+    test_percentage = float(args.percentage)
+    if test_percentage < 0 or test_percentage > 1:
+       print(f"Percentage must be between 0 and 1: {test_percentage}")
+       isError = True
+except Exception as e:
+    print(f"Exception {e} for the percentage: {args.percentage}")
     isError = True
+
 
 if isError:
     exit()
