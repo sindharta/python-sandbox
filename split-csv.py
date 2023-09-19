@@ -5,14 +5,14 @@ import random
 
 parser = ArgumentParser()
 
-parser.add_argument('--num_rows', '-n', required=False, default=5, help='The number of rows from the CSV file (default: 5)')
+parser.add_argument('--percentage', '-p', required=False, default=0.2, help='The percentage of rows for test data (default: 0.2)')
 parser.add_argument('--input', '-i', required=True, help='The input CSV file')
 parser.add_argument('--output', '-o', required=False, default="output.csv", help='The output CSV file (default: output.csv)')
 parser.add_argument('--include_header_row', '-r', required=False, default=False, help='Include the top header row (default: False)')
 
 args = parser.parse_args()
 
-num_rows = args.num_rows
+test_percentage = float(args.percentage)
 input_filename = args.input
 
 # print(os.getcwd())
@@ -24,8 +24,8 @@ if not os.path.isfile(input_filename):
     isError = True
     exit()
 
-if num_rows <= 0:
-    print(f"Invalid number of rows: {num_rows}")
+if test_percentage <= 0:
+    print(f"Invalid percentage: {test_percentage}")
     isError = True
 
 if isError:
@@ -42,10 +42,10 @@ with open(input_filename) as f:
             header = line
 
 num_lines = num_lines - 1 if not args.include_header_row else num_lines
-num_rows = min(num_lines, num_rows)
+num_rows = min(num_lines, int(test_percentage * num_lines))
 
 # Calculate random numbers
-chosen_rows = set()
+test_data_rows = set()
 start_line = 1 if args.include_header_row else 0
 while (len(chosen_rows) < num_rows):
     candidate_row = random.randrange(num_lines) + start_line
@@ -60,10 +60,10 @@ with open(input_filename) as f:
             output.append(row)
 
 
-with open('output.csv', 'w', newline='', encoding='utf-8') as f:
-    writer = csv.writer(f)
-    for estate in desiredRealEstates:
-        writer.writerow([estate['place name'], estate['postal code'], estate['latitude'], estate['longitude']])
+#with open('output.csv', 'w', newline='', encoding='utf-8') as f:
+#    writer = csv.writer(f)
+#    for estate in desiredRealEstates:
+#        writer.writerow([estate['place name'], estate['postal code'], estate['latitude'], estate['longitude']])
 
 
 print(output)
