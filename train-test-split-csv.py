@@ -35,7 +35,6 @@ isError = False
 if not os.path.isfile(input_filename):
     print(f"Invalid input file: {input_filename}")
     isError = True
-    exit()
 
 test_percentage = 0
 try:
