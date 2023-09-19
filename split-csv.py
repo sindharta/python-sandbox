@@ -38,6 +38,8 @@ except Exception as e:
 if isError:
     exit()
 
+has_header_row = args.has_header_row
+
 # First read to know the number of lines
 header = ""
 num_lines = 0
@@ -45,15 +47,15 @@ with open(input_filename) as f:
     for line in f:
         if line.strip() != "":
             num_lines +=1
-        if (num_lines == 1 & args.include_header_row):
+        if (num_lines == 1 and args.has_header_row):
             header = line
 
-num_lines = num_lines - 1 if not args.include_header_row else num_lines
+num_lines = num_lines - 1 if not has_header_row else num_lines
 num_rows = min(num_lines, int(test_percentage * num_lines))
 
 # Calculate random numbers
 test_data_rows = set()
-start_line = 1 if args.include_header_row else 0
+start_line = 1 if has_header_row else 0
 while (len(test_data_rows) < num_rows):
     candidate_row = random.randrange(num_lines) + start_line
     test_data_rows.add(candidate_row)
@@ -63,6 +65,7 @@ train_data = list()
 test_data = list()
 with open(input_filename) as f:
     reader = csv.reader(f)
+    next(reader)
     for row_number, row in enumerate(reader):
         if row_number in test_data_rows:
             test_data.append(row)
