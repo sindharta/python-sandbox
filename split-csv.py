@@ -6,9 +6,10 @@ import random
 parser = ArgumentParser()
 
 parser.add_argument('--percentage', '-p', required=False, default=0.2, help='The percentage of rows for test data (default: 0.2)')
+parser.add_argument('--include_header_row', '-h', required=False, default=False, help='Include the top header row (default: False)')
 parser.add_argument('--input', '-i', required=True, help='The input CSV file')
-parser.add_argument('--output', '-o', required=False, default="output.csv", help='The output CSV file (default: output.csv)')
-parser.add_argument('--include_header_row', '-r', required=False, default=False, help='Include the top header row (default: False)')
+parser.add_argument('--output_train', required=False, default="train.csv", help='The output train CSV file (default: train.csv)')
+parser.add_argument('--output_test', required=False, default="test.csv", help='The output test CSV file (default: test.csv)')
 
 args = parser.parse_args()
 
@@ -58,12 +59,16 @@ while (len(test_data_rows) < num_rows):
     test_data_rows.add(candidate_row)
 
 # Second read to get the rows
-output = list()
+train_data = list()
+test_data = list()
 with open(input_filename) as f:
     reader = csv.reader(f)
     for row_number, row in enumerate(reader):
         if row_number in test_data_rows:
-            output.append(row)
+            test_data.append(row)
+        else:
+            train_data.append(row)
+
 
 
 #with open('output.csv', 'w', newline='', encoding='utf-8') as f:
@@ -72,8 +77,10 @@ with open(input_filename) as f:
 #        writer.writerow([estate['place name'], estate['postal code'], estate['latitude'], estate['longitude']])
 
 
-print(output)
-print(len(output))
+print(os.path.basename(input_filename))
+
+print(test_data)
+print(len(test_data))
 
 #with open(input_filename,'r') as f:
 #    reader = csv.reader(f, delimiter='\t')
