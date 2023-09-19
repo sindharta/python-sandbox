@@ -60,6 +60,12 @@ with open(input_filename) as f:
             output.append(row)
 
 
+with open('output.csv', 'w', newline='', encoding='utf-8') as f:
+    writer = csv.writer(f)
+    for estate in desiredRealEstates:
+        writer.writerow([estate['place name'], estate['postal code'], estate['latitude'], estate['longitude']])
+
+
 print(output)
 print(len(output))
 
