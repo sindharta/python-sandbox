@@ -47,16 +47,16 @@ num_rows = min(num_lines, int(test_percentage * num_lines))
 # Calculate random numbers
 test_data_rows = set()
 start_line = 1 if args.include_header_row else 0
-while (len(chosen_rows) < num_rows):
+while (len(test_data_rows) < num_rows):
     candidate_row = random.randrange(num_lines) + start_line
-    chosen_rows.add(candidate_row)
+    test_data_rows.add(candidate_row)
 
 # Second read to get the rows
 output = list()
 with open(input_filename) as f:
     reader = csv.reader(f)
     for row_number, row in enumerate(reader):
-        if row_number in chosen_rows:
+        if row_number in test_data_rows:
             output.append(row)
 
 
