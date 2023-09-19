@@ -62,12 +62,12 @@ with open(input_filename) as f:
             header = line
 
 num_lines = num_lines - 1 if not has_header_row else num_lines
-num_rows = min(num_lines, int(test_percentage * num_lines))
+num_test_data = min(num_lines, int(test_percentage * num_lines))
 
 # Calculate random numbers
 test_data_rows = set()
 start_line = 1 if has_header_row else 0
-while (len(test_data_rows) < num_rows):
+while (len(test_data_rows) < num_test_data):
     candidate_row = random.randrange(num_lines) + start_line
     test_data_rows.add(candidate_row)
 
