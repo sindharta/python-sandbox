@@ -4,11 +4,12 @@ import os
 import random
 
 def WriteToCSV(outputFileName, dataList, header):
+    print(header)
     with open(outputFileName, 'w', newline='', encoding='utf-8') as f:
-        writer = csv.writer(f)
-
         if (len(header) > 0):
-            writer.writerow(header)
+            f.write(f'{header}')
+
+        writer = csv.writer(f)
         for d in dataList:
             writer.writerow(d)
     print(f"Data written to {outputFileName}")
@@ -85,22 +86,7 @@ with open(input_filename) as f:
         else:
             train_data.append(row)
 
-
+# Write to train test file
 WriteToCSV(args.output_train, train_data, header)
 WriteToCSV(args.output_test, test_data, header)
-
-
-
-#print(os.path.basename(input_filename))
-
-#print(test_data)
-#print(len(test_data))
-
-#with open(input_filename,'r') as f:
-#    reader = csv.reader(f, delimiter='\t')
-#    print(type(reader))
-#    next(reader)
-#    for row in reader:
-#        print(row)
-
 
