@@ -4,7 +4,6 @@ import os
 import random
 
 def WriteToCSV(outputFileName, dataList, header):
-    print(header)
     with open(outputFileName, 'w', newline='', encoding='utf-8') as f:
         if (len(header) > 0):
             f.write(f'{header}')
