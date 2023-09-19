@@ -3,11 +3,23 @@ import csv
 import os
 import random
 
+def WriteToCSV(outputFileName, dataList, header):
+    with open(outputFileName, 'w', newline='', encoding='utf-8') as f:
+        writer = csv.writer(f)
+
+        if (len(header) > 0):
+            writer.writerow(header)
+        for d in dataList:
+            writer.writerow(d)
+    print(f"Data written to {outputFileName}")
+
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 parser = ArgumentParser()
 
 parser.add_argument('--percentage', '-p', required=False, default=0.2, help='The percentage of rows for test data (default: 0.2)')
-parser.add_argument('--include_header_row', '-h', required=False, default=False, help='Include the top header row (default: False)')
 parser.add_argument('--input', '-i', required=True, help='The input CSV file')
+parser.add_argument('--has_header_row', '-r', required=False, default=True, help='Specifies if the CSV has a header row or not')
 parser.add_argument('--output_train', required=False, default="train.csv", help='The output train CSV file (default: train.csv)')
 parser.add_argument('--output_test', required=False, default="test.csv", help='The output test CSV file (default: test.csv)')
 
@@ -65,7 +77,8 @@ train_data = list()
 test_data = list()
 with open(input_filename) as f:
     reader = csv.reader(f)
-    next(reader)
+    if has_header_row:
+        next(reader)
     for row_number, row in enumerate(reader):
         if row_number in test_data_rows:
             test_data.append(row)
@@ -73,17 +86,15 @@ with open(input_filename) as f:
             train_data.append(row)
 
 
-
-#with open('output.csv', 'w', newline='', encoding='utf-8') as f:
-#    writer = csv.writer(f)
-#    for estate in desiredRealEstates:
-#        writer.writerow([estate['place name'], estate['postal code'], estate['latitude'], estate['longitude']])
+WriteToCSV(args.output_train, train_data, header)
+WriteToCSV(args.output_test, test_data, header)
 
 
-print(os.path.basename(input_filename))
 
-print(test_data)
-print(len(test_data))
+#print(os.path.basename(input_filename))
+
+#print(test_data)
+#print(len(test_data))
 
 #with open(input_filename,'r') as f:
 #    reader = csv.reader(f, delimiter='\t')
