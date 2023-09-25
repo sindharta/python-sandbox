@@ -54,7 +54,7 @@ has_header_row = args.has_header_row
 # First read to know the number of lines
 header = ""
 num_lines = 0
-with open(input_filename) as f:
+with open(input_filename, encoding='utf-8') as f:
     for line in f:
         if line.strip() != "":
             num_lines +=1
@@ -74,7 +74,7 @@ while (len(test_data_rows) < num_test_data):
 # Second read to get the rows
 train_data = list()
 test_data = list()
-with open(input_filename) as f:
+with open(input_filename, encoding='utf-8') as f:
     reader = csv.reader(f)
     if has_header_row:
         next(reader)
