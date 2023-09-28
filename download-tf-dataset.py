@@ -36,27 +36,27 @@ def convert_tf_data_to_nparray(tf_data):
 
 parser = ArgumentParser()
 parser.add_argument('--dataset_name', '-d', required=True, help='The name of the dataset')
+parser.add_argument('--output_prefix', '-p' , required=False, default="output_", help='The prefix of the CSV outputs (default: output_)')
+
 args = parser.parse_args()
 
 
+# load dataset
 dataset_name = args.dataset_name
 data, info = tfds.load(dataset_name, with_info=True, as_supervised=True)
 
+for k,v in data.items():
+    (sentences, labels) = convert_tf_data_to_nparray(v)
 
+    # Combine with label into 2D array
+    csv_data = np.vstack((sentences, labels)).T
 
-(train_sentences, train_labels) = convert_tf_data_to_nparray(data['train'])
+    #write data
+    output_file_name = args.output_prefix + k + ".csv"
+    write_to_csv(output_file_name, csv_data)
 
-#print(train_sentences[0:1])
-#print(train_labels[0:1])
-
-train_data = np.vstack((train_sentences, train_labels)).T
-
-print(train_data[0:1])
-
-#print(np.concatenate([train_sentences, train_labels]))
-
-#write
+#write info
 with open("info.json", 'w', newline='', encoding='utf-8') as f:
     f.write(info.as_json)
 
-write_to_csv("train.csv",train_data)
+
