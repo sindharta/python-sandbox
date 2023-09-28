@@ -1,3 +1,5 @@
+#Usage example: python download-tf-dataset.py --dataset_name imdb_reviews
+
 from argparse import ArgumentParser
 import csv
 import numpy as np
