@@ -1,7 +1,6 @@
 from argparse import ArgumentParser
 import csv
-import os
-import random
+import numpy as np
 
 import tensorflow as tf
 import tensorflow_datasets as tfds
@@ -10,7 +9,7 @@ import tensorflow_datasets as tfds
 # if the programs fails to load "resource" when importing tensorflow_datasets on Windows, then we may have to apply this patch
 # https://github.com/tensorflow/datasets/commit/82215c7cf4b3e6df706a72c9b7ad8cede09f4d84
 
-def WriteToCSV(outputFileName, dataList, header):
+def write_to_csv(outputFileName, dataList, header = ""):
     with open(outputFileName, 'w', newline='', encoding='utf-8') as f:
         if (len(header) > 0):
             f.write(f'{header}')
@@ -45,10 +44,17 @@ data, info = tfds.load(dataset_name, with_info=True, as_supervised=True)
 
 (train_sentences, train_labels) = convert_tf_data_to_nparray(data['train'])
 
-print(train_sentences[0:5])
-print(train_labels[0:5])
+#print(train_sentences[0:1])
+#print(train_labels[0:1])
 
+train_data = np.vstack((train_sentences, train_labels)).T
 
+print(train_data[0:1])
+
+#print(np.concatenate([train_sentences, train_labels]))
+
+#write
 with open("info.json", 'w', newline='', encoding='utf-8') as f:
     f.write(info.as_json)
 
+write_to_csv("train.csv",train_data)
