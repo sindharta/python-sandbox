@@ -1,3 +1,4 @@
+import csv
 
 def write_to_csv(outputFileName, dataList, header = ""):
     with open(outputFileName, 'w', newline='', encoding='utf-8') as f:

@@ -1,7 +1,6 @@
 #Usage example: python download-tf-dataset.py --dataset_name imdb_reviews --output_info imdb_info.json
 
 from argparse import ArgumentParser
-import csv
 import numpy as np
 
 import tensorflow as tf
