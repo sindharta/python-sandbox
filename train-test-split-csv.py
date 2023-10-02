@@ -3,7 +3,7 @@ import csv
 import os
 import random
 
-from shinlib_csv import write_to_csv
+from shinmodule import write_to_csv
 
 
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------

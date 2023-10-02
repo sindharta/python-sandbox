@@ -6,7 +6,7 @@ import numpy as np
 import tensorflow as tf
 import tensorflow_datasets as tfds
 
-from shinlib_csv import write_to_csv
+from shinmodule import write_to_csv
 
 # [Note-sin: 2023-9-28]
 # if the programs fails to load "resource" when importing tensorflow_datasets on Windows, then we may have to apply this patch
