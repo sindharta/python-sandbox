@@ -25,8 +25,8 @@ def convert_tf_data_to_nparray(tf_data):
     sentences = []
     labels = []
 
-    for sent, label in tf_data:
-        sentences.append(str(sent.numpy().decode('utf8')))
+    for sentence, label in tf_data:
+        sentences.append(str(sentence.numpy().decode('utf8')))
         labels.append(label.numpy())
 
     return (sentences, labels)
