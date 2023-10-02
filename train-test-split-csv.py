@@ -3,15 +3,8 @@ import csv
 import os
 import random
 
-def WriteToCSV(outputFileName, dataList, header):
-    with open(outputFileName, 'w', newline='', encoding='utf-8') as f:
-        if (len(header) > 0):
-            f.write(f'{header}')
+from shinmodule import write_to_csv
 
-        writer = csv.writer(f)
-        for d in dataList:
-            writer.writerow(d)
-    print(f"Data written to {outputFileName}")
 
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -85,6 +78,6 @@ with open(input_filename, encoding='utf-8') as f:
             train_data.append(row)
 
 # Write to train test file
-WriteToCSV(args.output_train, train_data, header)
-WriteToCSV(args.output_test, test_data, header)
+write_to_csv(args.output_train, train_data, header)
+write_to_csv(args.output_test, test_data, header)
 

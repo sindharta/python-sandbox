@@ -1,25 +1,16 @@
 #Usage example: python download-tf-dataset.py --dataset_name imdb_reviews --output_info imdb_info.json
 
 from argparse import ArgumentParser
-import csv
 import numpy as np
 
 import tensorflow as tf
 import tensorflow_datasets as tfds
 
+from shinmodule import write_to_csv
+
 # [Note-sin: 2023-9-28]
 # if the programs fails to load "resource" when importing tensorflow_datasets on Windows, then we may have to apply this patch
 # https://github.com/tensorflow/datasets/commit/82215c7cf4b3e6df706a72c9b7ad8cede09f4d84
-
-def write_to_csv(outputFileName, dataList, header = ""):
-    with open(outputFileName, 'w', newline='', encoding='utf-8') as f:
-        if (len(header) > 0):
-            f.write(f'{header}')
-
-        writer = csv.writer(f)
-        for d in dataList:
-            writer.writerow(d)
-    print(f"Data written to {outputFileName}")
 
 def convert_tf_data_to_nparray(tf_data):
     sentences = []
