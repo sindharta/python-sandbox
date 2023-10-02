@@ -37,7 +37,7 @@ def convert_tf_data_to_nparray(tf_data):
 parser = ArgumentParser()
 parser.add_argument('--dataset_name', '-d', required=True, help='The name of the dataset')
 parser.add_argument('--output_prefix', '-p' , required=False, default="output_", help='The prefix of the CSV outputs (default: output_)')
-parser.add_argument('--output_info', '-p' , required=False, default="info.json", help='The path of the dataset info (default: info.json)')
+parser.add_argument('--output_info', '-i' , required=False, default="info.json", help='The path of the dataset info (default: info.json)')
 
 args = parser.parse_args()
 
@@ -59,5 +59,6 @@ for k,v in data.items():
 #write info
 with open(args.output_info, 'w', newline='', encoding='utf-8') as f:
     f.write(info.as_json)
+    print(f"Info written to {args.output_info}")
 
 
