@@ -177,7 +177,6 @@ for declaration_line_index, line in enumerate(lines):
 
         usage_lines = run_grep(input_dir, keyword)
 
-        print ("Grepping: ", keyword)
         for usage_line in usage_lines:
             if "#pragma" in usage_line:
                 continue
@@ -195,17 +194,20 @@ for i, keyword in enumerate(keywords_dict):
     print(keyword)
 
     # Declarations
+    print("    Declarations")
     for j, pragma_type in enumerate(keywords_dict[keyword].declarations):
         cur_dict = keywords_dict[keyword].declarations[pragma_type]
+        print(" " * 8, pragma_type)
         for k, shader_file_path in enumerate(cur_dict):
-            print("    ",shader_file_path)
+            print(" " * 12,shader_file_path)
             for (usage_line, line_content) in cur_dict[shader_file_path]:
-                print("         ", usage_line, line_content)
+                print(" " * 16, usage_line, line_content)
 
     # Usages
+    print("    Usage")
     for j, shader_file_path in enumerate(keywords_dict[keyword].usages):
-        print("    ",shader_file_path)
+        print(" " * 8,shader_file_path)
         for (usage_line, line_content) in keywords_dict[keyword].usages[shader_file_path]:
-            print("         ", usage_line, line_content)
+            print(" " * 12, usage_line, line_content)
 
 
