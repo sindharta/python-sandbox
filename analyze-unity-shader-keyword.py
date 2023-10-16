@@ -127,7 +127,7 @@ special_pragma_types = set()
 #                  B.hlsl -> [(line 90, actual_line), (line 80, actual_line)]
 
 keywords_dict = {}
-keywords_grepped = ()
+keywords_grepped = set()
 
 for declaration_line_index, line in enumerate(lines):
     tokens = line.split()
@@ -171,6 +171,9 @@ for declaration_line_index, line in enumerate(lines):
         # Usages
         if keyword in keywords_grepped:
             continue
+
+        keywords_grepped.add(keyword)
+
 
         usage_lines = run_grep(input_dir, keyword)
 
