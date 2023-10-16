@@ -67,6 +67,24 @@ class ShaderKeyword:
         self.declarations = {}
         self.usages = {}
 
+    def add_declaration(self, pragma_type, shader_file_path, line_number, desc):
+        # Declarations
+        # _SHADOWS_SOFT -> multi_compile -> A.hlsl -> [(line 10, actual_line), (line 20, actual_line)]
+        if not pragma_type in self.declarations:
+            self.declarations[pragma_type] = {}
+
+        if not shader_file_path in self.declarations[pragma_type]:
+            self.declarations[pragma_type][shader_file_path] = list()
+
+        self.declarations[pragma_type][shader_file_path].append((line_number, desc))
+
+    def get_or_add_usage(self, shader_file_path):
+
+        if not shader_file_path in self.usages:
+            cur_shader_keyword.usages[shader_file_path] = list()
+
+        return cur_shader_keyword.usages[shader_file_path]
+
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 parser = ArgumentParser()
@@ -120,7 +138,10 @@ for line in lines:
 
     keyword_start_index = 3
     keyword_tokens_in_line = " ".join(tokens[keyword_start_index:])
-    shader_file_path = tokens[0].replace(input_dir,"")[1:] # use local_path relative to input_dir
+    shader_file_path_tokens = tokens[0].replace(input_dir,"")[1:].split(':') # use local_path relative to input_dir
+    shader_file_path = shader_file_path_tokens[0]
+    declaration_line_number = shader_file_path_tokens[1]
+
     for index, keyword in enumerate(tokens[keyword_start_index:], keyword_start_index):
         if keyword == "_" or keyword == "__":
             continue
@@ -134,17 +155,18 @@ for line in lines:
         if not keyword in keywords_dict:
             keywords_dict[keyword] = ShaderKeyword(keyword)
 
-        # Usages
-        # _SHADOWS_SOFT -> A.hlsl -> [(line 10, actual_line), (line 20, actual_line)]
         cur_shader_keyword = keywords_dict[keyword]
-        print(type(cur_shader_keyword.usages))
 
-        if not shader_file_path in cur_shader_keyword.usages:
-            cur_shader_keyword.usages[shader_file_path] = list()
+        # Declarations
+        cur_shader_keyword.add_declaration(pragma_type, shader_file_path,declaration_line_number, keyword_tokens_in_line)
+
+
+        # Usages
+        keyword_usage = cur_shader_keyword.get_or_add_usage(shader_file_path)
 
         # do another grep here
         line_number = 10
-        cur_shader_keyword.usages[shader_file_path].append((line_number, "test"))
+        keyword_usage.append((line_number, "test"))
 
 
 for i, keyword in enumerate(keywords_dict):
