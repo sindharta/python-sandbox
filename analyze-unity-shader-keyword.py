@@ -174,6 +174,7 @@ for declaration_line_index, line in enumerate(lines):
 
         usage_lines = run_grep(input_dir, keyword)
 
+        print ("Grepping: ", keyword)
         for usage_line in usage_lines:
             if "#pragma" in usage_line:
                 continue
