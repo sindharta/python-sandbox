@@ -47,7 +47,7 @@ def write_keywords_dict_to_csv(outputFileName, keywords_dict):
 def run_grep(input_dir, pattern):
 
     # -Hrn with line numbers
-    proc = subprocess.run(["grep", "-Hrn", pattern, input_dir, "--include", "'*.shader'"], capture_output=True, text=True)
+    proc = subprocess.run(["grep", "-Hrn", pattern, input_dir, "--include", "'*.'{shader,hlsl,cg,cginc}"], capture_output=True, text=True)
     grep_result = proc.stdout
     return grep_result.splitlines()
 
