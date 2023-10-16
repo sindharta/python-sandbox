@@ -148,7 +148,12 @@ for declaration_line_index, line in enumerate(lines):
     keyword_tokens_in_line = " ".join(tokens[keyword_start_index:])
     shader_file_path_tokens = tokens[0].replace(input_dir,"")[1:].split(':') # use local_path relative to input_dir
 
-    (shader_file_path, declaration_line_number, _) = split_path_and_line(input_dir, tokens[0])
+    (shader_file_path, declaration_line_number, rem_token_0) = split_path_and_line(input_dir, tokens[0])
+
+    # Empty strings are false
+    if rem_token_0:
+        print("Error: this program needs to be upgraded to handle the remaining of token 0: ", rem_token_0)
+        exit()
 
     # loop all keywords in this declaration line
     for index, keyword in enumerate(tokens[keyword_start_index:], keyword_start_index):
