@@ -8,6 +8,8 @@ import random
 
 from shinmodule import write_to_csv
 
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 def isSpecialPragmaType(token):
     if (token == "multi_compile"):
         return False
@@ -35,16 +37,25 @@ def isSpecialPragmaType(token):
 
     return True
 
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+def write_keywords_dict_to_csv(outputFileName, keywords_dict):
+    with open(outputFileName, 'w', newline='', encoding='utf-8') as f:
+
+        writer = csv.writer(f)
+        for i, key in enumerate(keywords_dict):
+            
+            writer.writerow([key])
+
+    print(f"Data written to {outputFileName}")
+
 
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 parser = ArgumentParser()
 
-# parser.add_argument('--percentage', '-p', required=False, default=0.2, help='The percentage of rows for test data (default: 0.2)')
 parser.add_argument('--input', '-i', required=True, help='The input CSV file')
-# parser.add_argument('--has_header_row', '-r', required=False, default=True, help='Specifies if the CSV has a header row or not (default: True)')
-# parser.add_argument('--output_train', required=False, default="train.csv", help='The output train CSV file (default: train.csv)')
-# parser.add_argument('--output_test', required=False, default="test.csv", help='The output test CSV file (default: test.csv)')
+parser.add_argument('--output', '-o',required=False, default="shader.csv", help='The output file (default: shader.csv)')
 
 args = parser.parse_args()
 
@@ -101,6 +112,8 @@ with open(input_filename, encoding='utf-8') as f:
             keywords_dict[pragma_type][keyword].add(keyword_tokens_in_line)
 
 print(keywords_dict)
+
+write_keywords_dict_to_csv(args.output, keywords_dict)
 
 #for c in special_pragma_types:
 #    print(c)
