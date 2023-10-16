@@ -57,7 +57,7 @@ def run_grep(input_dir, pattern):
 def split_path_and_line(input_dir, path_and_line):
 
     tokens = path_and_line.replace(input_dir,"")[1:].split(':') # use local_path relative to input_dir
-    return (tokens[0], tokens[1])
+    return (tokens[0], tokens[1], " ".join(tokens[2:]))
 
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -148,7 +148,7 @@ for declaration_line_index, line in enumerate(lines):
     keyword_tokens_in_line = " ".join(tokens[keyword_start_index:])
     shader_file_path_tokens = tokens[0].replace(input_dir,"")[1:].split(':') # use local_path relative to input_dir
 
-    (shader_file_path, declaration_line_number) = split_path_and_line(input_dir, tokens[0])
+    (shader_file_path, declaration_line_number, _) = split_path_and_line(input_dir, tokens[0])
 
     # loop all keywords in this declaration line
     for index, keyword in enumerate(tokens[keyword_start_index:], keyword_start_index):
@@ -165,7 +165,7 @@ for declaration_line_index, line in enumerate(lines):
         cur_shader_keyword.add_declaration(pragma_type, shader_file_path,declaration_line_number, keyword_tokens_in_line)
 
         #break early for debugging
-        # if declaration_line_index >= 5:
+        # if declaration_line_index >= 10:
         #     break
 
         # Usages
@@ -177,16 +177,20 @@ for declaration_line_index, line in enumerate(lines):
 
         usage_lines = run_grep(input_dir, keyword)
 
+
         for usage_line in usage_lines:
             if "#pragma" in usage_line:
                 continue
 
             usage_tokens = usage_line.split()
 
-            (usage_path, usage_line_number) = split_path_and_line(input_dir, usage_tokens[0])
+            (usage_path, usage_line_number, rem_token_0) = split_path_and_line(input_dir, usage_tokens[0])
+
+            usage_line_content = rem_token_0 + " " + " ".join(usage_tokens[1:])
+            # print(usage_path, " " * 4, usage_line_content)
 
             keyword_usage = cur_shader_keyword.get_or_add_usage(usage_path)
-            keyword_usage.append( (usage_line_number, " ".join(usage_tokens[1:])) )
+            keyword_usage.append( (usage_line_number, usage_line_content) )
 
 
 # print
