@@ -119,7 +119,7 @@ for line in lines:
 
     keyword_start_index = 3
     keyword_tokens_in_line = " ".join(tokens[keyword_start_index:])
-    shader_file_path = tokens[0]
+    shader_file_path = tokens[0].replace(input_dir,"")[1:] # use local_path relative to input_dir
     for index, keyword in enumerate(tokens[keyword_start_index:], keyword_start_index):
         if keyword == "_" or keyword == "__":
             continue
