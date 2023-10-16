@@ -172,9 +172,16 @@ for line in lines:
 for i, keyword in enumerate(keywords_dict):
     print(keyword)
 
-    for j, shader_file_path in enumerate(keywords_dict[keyword].usages):
-        print("    ",shader_file_path)
-        for (usage_line, line_content) in keywords_dict[keyword].usages[shader_file_path]:
-            print("         ", usage_line, line_content)
+    for j, pragma_type in enumerate(keywords_dict[keyword].declarations):
+        cur_dict = keywords_dict[keyword].declarations[pragma_type]
+        for k, shader_file_path in enumerate(cur_dict):
+            print("    ",shader_file_path)
+            for (usage_line, line_content) in cur_dict[shader_file_path]:
+                print("         ", usage_line, line_content)
+
+#    for j, shader_file_path in enumerate(keywords_dict[keyword].usages):
+#        print("    ",shader_file_path)
+#        for (usage_line, line_content) in keywords_dict[keyword].usages[shader_file_path]:
+#            print("         ", usage_line, line_content)
 
 
