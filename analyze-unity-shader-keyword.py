@@ -127,8 +127,9 @@ special_pragma_types = set()
 #                  B.hlsl -> [(line 90, actual_line), (line 80, actual_line)]
 
 keywords_dict = {}
+keywords_grepped = ()
 
-for line in lines:
+for declaration_line_index, line in enumerate(lines):
     tokens = line.split()
 
     pragma_token = tokens[1]
@@ -149,16 +150,12 @@ for line in lines:
 
     (shader_file_path, declaration_line_number) = split_path_and_line(input_dir, tokens[0])
 
+    # loop all keywords in this declaration line
     for index, keyword in enumerate(tokens[keyword_start_index:], keyword_start_index):
         if keyword == "_" or keyword == "__":
             continue
 
-        #            print(keyword, index, keyword_tokens_in_line)
-
-#        if not pragma_type in keywords_dict:
-#            keywords_dict[pragma_type] = dict()
-
-
+        #print(keyword, index, keyword_tokens_in_line)
         if not keyword in keywords_dict:
             keywords_dict[keyword] = ShaderKeyword(keyword)
 
@@ -167,11 +164,14 @@ for line in lines:
         # Declarations
         cur_shader_keyword.add_declaration(pragma_type, shader_file_path,declaration_line_number, keyword_tokens_in_line)
 
-        #test
-        if index >= 5:
-            break
+        #break early for debugging
+        # if declaration_line_index >= 5:
+        #     break
 
         # Usages
+        if keyword in keywords_grepped:
+            continue
+
         usage_lines = run_grep(input_dir, keyword)
 
         for usage_line in usage_lines:
@@ -181,22 +181,23 @@ for line in lines:
             usage_tokens = usage_line.split()
 
             (usage_path, usage_line_number) = split_path_and_line(input_dir, usage_tokens[0])
+
             keyword_usage = cur_shader_keyword.get_or_add_usage(usage_path)
-            keyword_usage.append((usage_line_number, usage_line))
+            keyword_usage.append( (usage_line_number, " ".join(usage_tokens[1:])) )
 
 
 # print
 for i, keyword in enumerate(keywords_dict):
     print(keyword)
 
-    # # Declarations
-    # for j, pragma_type in enumerate(keywords_dict[keyword].declarations):
-    #     cur_dict = keywords_dict[keyword].declarations[pragma_type]
-    #     for k, shader_file_path in enumerate(cur_dict):
-    #         print("    ",shader_file_path)
-    #         for (usage_line, line_content) in cur_dict[shader_file_path]:
-    #             print("         ", usage_line, line_content)
-    #
+    # Declarations
+    for j, pragma_type in enumerate(keywords_dict[keyword].declarations):
+        cur_dict = keywords_dict[keyword].declarations[pragma_type]
+        for k, shader_file_path in enumerate(cur_dict):
+            print("    ",shader_file_path)
+            for (usage_line, line_content) in cur_dict[shader_file_path]:
+                print("         ", usage_line, line_content)
+
     # Usages
     for j, shader_file_path in enumerate(keywords_dict[keyword].usages):
         print("    ",shader_file_path)
