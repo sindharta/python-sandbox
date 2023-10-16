@@ -44,6 +44,13 @@ def write_keywords_dict_to_csv(outputFileName, keywords_dict):
 
     print(f"Data written to {outputFileName}")
 
+def run_grep(input_dir, pattern):
+
+    # -Hrn with line numbers
+    proc = subprocess.run(["grep", "-Hrn", pattern, input_dir, "--include", "'*.shader'"], capture_output=True, text=True)
+    grep_result = proc.stdout
+    return grep_result.splitlines()
+
 
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -83,14 +90,8 @@ if isError:
 
 
 
-# You can use -Hrn instead of -r if you want line numbers as well.
-proc = subprocess.run(["grep", "-r", "'#pragma\smulti_compile\|#pragma\sshader_feature'", input_dir, "--include", "'*.shader'"],
-                      capture_output=True, text=True)
-grep_result = proc.stdout
-lines = grep_result.splitlines()
+lines = run_grep(input_dir, "'#pragma\smulti_compile\|#pragma\sshader_feature'")
 
-# Ex: multi_compile_fog -> A.hlsl -> [line 10, line 20]
-#                          B.hlsl -> [line 90, line 80]
 special_pragma_types = set()
 
 # Definition:
@@ -137,9 +138,6 @@ for line in lines:
         # _SHADOWS_SOFT -> A.hlsl -> [(line 10, actual_line), (line 20, actual_line)]
         cur_shader_keyword = keywords_dict[keyword]
         print(type(cur_shader_keyword.usages))
-        a = dict
-        print(type(a))
-
 
         if not shader_file_path in cur_shader_keyword.usages:
             cur_shader_keyword.usages[shader_file_path] = list()
