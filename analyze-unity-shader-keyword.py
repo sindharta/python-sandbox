@@ -51,6 +51,13 @@ def run_grep(input_dir, pattern):
     grep_result = proc.stdout
     return grep_result.splitlines()
 
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+# file_path: ex: <input_dir>/Shaders/2D/Light2D.shader:20:
+def split_path_and_line(input_dir, path_and_line):
+
+    tokens = path_and_line.replace(input_dir,"")[1:].split(':') # use local_path relative to input_dir
+    return (tokens[0], tokens[1])
 
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -139,8 +146,8 @@ for line in lines:
     keyword_start_index = 3
     keyword_tokens_in_line = " ".join(tokens[keyword_start_index:])
     shader_file_path_tokens = tokens[0].replace(input_dir,"")[1:].split(':') # use local_path relative to input_dir
-    shader_file_path = shader_file_path_tokens[0]
-    declaration_line_number = shader_file_path_tokens[1]
+
+    (shader_file_path, declaration_line_number) = split_path_and_line(input_dir, tokens[0])
 
     for index, keyword in enumerate(tokens[keyword_start_index:], keyword_start_index):
         if keyword == "_" or keyword == "__":
@@ -160,28 +167,40 @@ for line in lines:
         # Declarations
         cur_shader_keyword.add_declaration(pragma_type, shader_file_path,declaration_line_number, keyword_tokens_in_line)
 
+        #test
+        if index >= 5:
+            break
 
         # Usages
-        keyword_usage = cur_shader_keyword.get_or_add_usage(shader_file_path)
+        usage_lines = run_grep(input_dir, keyword)
 
-        # do another grep here
-        line_number = 10
-        keyword_usage.append((line_number, "test"))
+        for usage_line in usage_lines:
+            if "#pragma" in usage_line:
+                continue
+
+            usage_tokens = usage_line.split()
+
+            (usage_path, usage_line_number) = split_path_and_line(input_dir, usage_tokens[0])
+            keyword_usage = cur_shader_keyword.get_or_add_usage(usage_path)
+            keyword_usage.append((usage_line_number, usage_line))
 
 
+# print
 for i, keyword in enumerate(keywords_dict):
     print(keyword)
 
-    for j, pragma_type in enumerate(keywords_dict[keyword].declarations):
-        cur_dict = keywords_dict[keyword].declarations[pragma_type]
-        for k, shader_file_path in enumerate(cur_dict):
-            print("    ",shader_file_path)
-            for (usage_line, line_content) in cur_dict[shader_file_path]:
-                print("         ", usage_line, line_content)
-
-#    for j, shader_file_path in enumerate(keywords_dict[keyword].usages):
-#        print("    ",shader_file_path)
-#        for (usage_line, line_content) in keywords_dict[keyword].usages[shader_file_path]:
-#            print("         ", usage_line, line_content)
+    # # Declarations
+    # for j, pragma_type in enumerate(keywords_dict[keyword].declarations):
+    #     cur_dict = keywords_dict[keyword].declarations[pragma_type]
+    #     for k, shader_file_path in enumerate(cur_dict):
+    #         print("    ",shader_file_path)
+    #         for (usage_line, line_content) in cur_dict[shader_file_path]:
+    #             print("         ", usage_line, line_content)
+    #
+    # Usages
+    for j, shader_file_path in enumerate(keywords_dict[keyword].usages):
+        print("    ",shader_file_path)
+        for (usage_line, line_content) in keywords_dict[keyword].usages[shader_file_path]:
+            print("         ", usage_line, line_content)
 
 
