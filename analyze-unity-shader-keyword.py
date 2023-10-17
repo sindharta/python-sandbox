@@ -93,6 +93,59 @@ class ShaderKeyword:
 
         return cur_shader_keyword.usages[shader_file_path]
 
+    def to_string_list(self, start_col):
+        ret = []
+
+        # Declarations
+        if len(self.declarations) > 0:
+
+            l = self.__create_empty_string_list(start_col)
+            l[start_col] = "Declarations"
+            for j, pragma_type in enumerate(self.declarations):
+                cur_dict = self.declarations[pragma_type]
+                l[start_col + 1] = pragma_type
+
+                if len(cur_dict) <= 0:
+                    print("Data error. Pragma is empty:", pragma_type)
+                    exit()
+
+                for k, shader_file_path in enumerate(cur_dict):
+                    l[start_col + 2] = shader_file_path
+                    if (len(cur_dict[shader_file_path])) <= 0:
+                        print("Declaration error. No usages in shader file:", shader_file_path)
+                        exit()
+
+                    for (usage_line, line_content) in cur_dict[shader_file_path]:
+                        l[start_col + 3] = usage_line
+                        l[start_col + 4] = line_content
+                        ret.append(l)
+                        l = self.__create_empty_string_list(start_col)
+
+
+        # Usages
+        if len(self.usages) > 0:
+            l = self.__create_empty_string_list(start_col)
+            l[start_col] = "Usages"
+
+            for j, shader_file_path in enumerate(self.usages):
+                l[start_col + 1] = shader_file_path
+
+                if (len(self.usages[shader_file_path])) <= 0:
+                    print("Usages error. No usages in shader file:", shader_file_path)
+                    exit()
+
+                for (usage_line, line_content) in self.usages[shader_file_path]:
+                    l[start_col + 2] = usage_line
+                    l[start_col + 3] = line_content
+                    ret.append(l)
+                    l = self.__create_empty_string_list(start_col)
+
+        return ret
+
+    def __create_empty_string_list(self, num_empty_elements):
+        return [""] * (num_empty_elements + 5)
+
+
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 parser = ArgumentParser()
