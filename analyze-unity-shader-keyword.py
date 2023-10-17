@@ -93,52 +93,64 @@ class ShaderKeyword:
 
         return cur_shader_keyword.usages[shader_file_path]
 
+    def validate(self):
+
+        # Declarations
+        if len(self.declarations) <= 0:
+            raise Exception(f"No declarations for keyword: {self.keyword}")
+
+        for j, pragma_type in enumerate(self.declarations):
+            cur_dict = self.declarations[pragma_type]
+
+            if len(cur_dict) <= 0:
+                raise Exception(f"Declarations error for keyword: {self.keyword}. Pragma is empty: {pragma_type}")
+
+            for k, shader_file_path in enumerate(cur_dict):
+                if (len(cur_dict[shader_file_path])) <= 0:
+                    raise Exception(f"Declarations error for keyword: {self.keyword}. No usages in shader file: {shader_file_path}")
+
+        # Usages
+        if len(self.usages) <=0:
+            raise Exception(f"No usages for keyword: {self.keyword}")
+
+        for j, shader_file_path in enumerate(self.usages):
+
+            if (len(self.usages[shader_file_path])) <= 0:
+                raise Exception(f"Usages error for keyword: {self.keyword}. No usages in shader file: {shader_file_path}")
+
+
     def to_string_list(self, start_col):
         ret = []
 
         # Declarations
-        if len(self.declarations) > 0:
+        l = self.__create_empty_string_list(start_col)
+        l[start_col] = "Declarations"
+        for j, pragma_type in enumerate(self.declarations):
+            cur_dict = self.declarations[pragma_type]
+            l[start_col + 1] = pragma_type
 
-            l = self.__create_empty_string_list(start_col)
-            l[start_col] = "Declarations"
-            for j, pragma_type in enumerate(self.declarations):
-                cur_dict = self.declarations[pragma_type]
-                l[start_col + 1] = pragma_type
+            for k, shader_file_path in enumerate(cur_dict):
+                l[start_col + 2] = shader_file_path
 
-                if len(cur_dict) <= 0:
-                    print("Data error. Pragma is empty:", pragma_type)
-                    exit()
-
-                for k, shader_file_path in enumerate(cur_dict):
-                    l[start_col + 2] = shader_file_path
-                    if (len(cur_dict[shader_file_path])) <= 0:
-                        print("Declaration error. No usages in shader file:", shader_file_path)
-                        exit()
-
-                    for (usage_line, line_content) in cur_dict[shader_file_path]:
-                        l[start_col + 3] = usage_line
-                        l[start_col + 4] = line_content
-                        ret.append(l)
-                        l = self.__create_empty_string_list(start_col)
+                for (usage_line, line_content) in cur_dict[shader_file_path]:
+                    l[start_col + 3] = usage_line
+                    l[start_col + 4] = line_content
+                    ret.append(l)
+                    l = self.__create_empty_string_list(start_col)
 
 
         # Usages
-        if len(self.usages) > 0:
-            l = self.__create_empty_string_list(start_col)
-            l[start_col] = "Usages"
+        l = self.__create_empty_string_list(start_col)
+        l[start_col] = "Usages"
 
-            for j, shader_file_path in enumerate(self.usages):
-                l[start_col + 1] = shader_file_path
+        for j, shader_file_path in enumerate(self.usages):
+            l[start_col + 1] = shader_file_path
 
-                if (len(self.usages[shader_file_path])) <= 0:
-                    print("Usages error. No usages in shader file:", shader_file_path)
-                    exit()
-
-                for (usage_line, line_content) in self.usages[shader_file_path]:
-                    l[start_col + 2] = usage_line
-                    l[start_col + 3] = line_content
-                    ret.append(l)
-                    l = self.__create_empty_string_list(start_col)
+            for (usage_line, line_content) in self.usages[shader_file_path]:
+                l[start_col + 2] = usage_line
+                l[start_col + 3] = line_content
+                ret.append(l)
+                l = self.__create_empty_string_list(start_col)
 
         return ret
 
@@ -251,26 +263,19 @@ for declaration_line_index, line in enumerate(lines):
             keyword_usage = cur_shader_keyword.get_or_add_usage(usage_path)
             keyword_usage.append( (usage_line_number, usage_line_content) )
 
+# convert to list
+list = []
+for i, keyword in enumerate(keywords_dict):
+    list.append([keyword])
+
+    try:
+        keywords_dict[keyword].validate()
+    except Exception as e:
+        print('Exception:', e)
+        continue
+
+    list.extend(keywords_dict[keyword].to_string_list(start_col=1))
 
 # print
-for i, keyword in enumerate(keywords_dict):
-    print(keyword)
-
-    # Declarations
-    print("    Declarations")
-    for j, pragma_type in enumerate(keywords_dict[keyword].declarations):
-        cur_dict = keywords_dict[keyword].declarations[pragma_type]
-        print(" " * 8, pragma_type)
-        for k, shader_file_path in enumerate(cur_dict):
-            print(" " * 12,shader_file_path)
-            for (usage_line, line_content) in cur_dict[shader_file_path]:
-                print(" " * 16, usage_line, line_content)
-
-    # Usages
-    print("    Usage")
-    for j, shader_file_path in enumerate(keywords_dict[keyword].usages):
-        print(" " * 8,shader_file_path)
-        for (usage_line, line_content) in keywords_dict[keyword].usages[shader_file_path]:
-            print(" " * 12, usage_line, line_content)
-
-
+for line in list:
+    print(line)
