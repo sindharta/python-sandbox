@@ -34,11 +34,11 @@ def is_special_pragma_type(token):
 
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def write_to_csv(outputFileName, dataList, header_row = []):
+def write_to_csv(outputFileName, dataList, header_rows = []):
     with open(outputFileName, 'w', newline='', encoding='utf-8') as f:
         writer = csv.writer(f)
-        if (len(header_row) > 0):
-            writer.writerow(header_row)
+        for h in header_rows:
+            writer.writerow(h)
 
         for d in dataList:
             writer.writerow(d)
@@ -134,39 +134,55 @@ class ShaderKeyword:
         l[start_col] = "Decl."
         for j, pragma_type in enumerate(self.declarations):
             cur_dict = self.declarations[pragma_type]
-            l[start_col + 1] = pragma_type
+            pragma_type_item = pragma_type
 
             for k, shader_file_path in enumerate(cur_dict):
-                l[start_col + 2] = shader_file_path
+                shader_file_path_item = shader_file_path
 
-                self.__extend_list_on_usage_dict(cur_dict[shader_file_path], start_col + 3, source_url_root, shader_file_path, l, ret)
+                usage_list = self.__create_usage_list(cur_dict[shader_file_path], start_col + 3, source_url_root, shader_file_path)
+                for usage in usage_list:
+                    usage[start_col+1] = pragma_type_item
+                    usage[start_col+2] = shader_file_path_item
+                    ret.append(usage)
+                    pragma_type_item = shader_file_path_item = ""
 
         # Shader Usages
         l = self.__create_empty_string_list(start_col)
         l[start_col] = "Sh Usages"
         for j, shader_file_path in enumerate(self.shader_usages):
-            l[start_col + 2] = shader_file_path
-            self.__extend_list_on_usage_dict(self.shader_usages[shader_file_path], start_col + 3, source_url_root, shader_file_path, l, ret)
+            shader_file_path_item = shader_file_path
+
+            usage_list = self.__create_usage_list(self.shader_usages[shader_file_path], start_col + 3, source_url_root, shader_file_path)
+            for usage in usage_list:
+                usage[start_col + 2] = shader_file_path_item
+                ret.append(usage)
+                shader_file_path_item = ""
 
         l = self.__create_empty_string_list(start_col)
         l[start_col] = "C# Usages"
         for j, cs_file_path in enumerate(self.cs_usages):
-            l[start_col + 2] = cs_file_path
-            self.__extend_list_on_usage_dict(self.cs_usages[cs_file_path], start_col + 3, source_url_root, cs_file_path, l, ret)
+            shader_file_path_item = shader_file_path
+
+            usage_list = self.__create_usage_list(self.cs_usages[cs_file_path], start_col + 3, source_url_root, cs_file_path)
+            for usage in usage_list:
+                usage[start_col + 2] = shader_file_path_item
+                ret.append(usage)
+                shader_file_path_item = ""
 
         return ret
 
-    def __extend_list_on_usage_dict(self, dictionary, start_col, source_url_root, file_path, out_col_list, out_line_list):
+    def __create_usage_list(self, dictionary, start_col, source_url_root, file_path):
+        ret = []
         for (usage_line, line_content) in dictionary:
-            out_col_list[start_col] = usage_line
-            out_col_list[start_col + 1] = line_content
+            l = self.__create_empty_string_list(start_col)
+
+            l[start_col] = usage_line
+            l[start_col + 1] = line_content
             if len(source_url_root) > 0:
-                out_col_list[start_col + 2] = f"{source_url_root}/{file_path}#L{usage_line}"
+                l[start_col + 2] = f"{source_url_root}/{file_path}#L{usage_line}"
 
-            out_line_list.append(out_col_list)
-            out_col_list = self.__create_empty_string_list(start_col)
-
-        pass
+            ret.append(l)
+        return ret
 
     def __create_empty_string_list(self, num_empty_elements):
         return [""] * (num_empty_elements + 6)
@@ -305,7 +321,7 @@ for keyword in sorted(keywords_dict.keys()):
 
     list.extend(keywords_dict[keyword].to_string_list(start_col=1, source_url_root= args.source_url_root))
 
-header_row = ["Keyword","","Type","FilePath", "LineNo", "LineContents", "URL"]
+header_row = [[ f"Total Keywords: {len(keywords_dict)}"], ["Keyword","","Type","FilePath", "LineNo", "LineContents", "URL"]]
 write_to_csv(args.output, list, header_row)
 
 # print
