@@ -226,7 +226,7 @@ lines = run_grep(input_dir, "'#pragma\smulti_compile\|#pragma\sshader_feature'",
 
 special_pragma_types = set()
 
-# Definition:
+# Declarations:
 # _SHADOWS_SOFT -> multi_compile -> A.hlsl -> [(line 10, actual_line), (line 20, actual_line)]
 #                                   B.hlsl -> [(line 90, actual_line), (line 80, actual_line)]
 # Usage:
@@ -318,8 +318,6 @@ for declaration_line_index, line in enumerate(lines):
 
             keyword_usage = cur_shader_keyword.get_or_add_cs_usage(usage_path)
             keyword_usage.append( (usage_line_number, usage_line_content) )
-
-
 
 # convert to list
 list = []
