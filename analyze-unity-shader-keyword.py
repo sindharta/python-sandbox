@@ -111,27 +111,28 @@ class ShaderKeyword:
 
         # Declarations
         if len(self.declarations) <= 0:
-            raise Exception(f"No declarations for keyword: {self.keyword}")
+            return f"No declarations for keyword: {self.keyword}"
 
         for j, pragma_type in enumerate(self.declarations):
             cur_dict = self.declarations[pragma_type]
 
             if len(cur_dict) <= 0:
-                raise Exception(f"Declarations error for keyword: {self.keyword}. Pragma is empty: {pragma_type}")
+                return f"Declarations error for keyword: {self.keyword}. Pragma is empty: {pragma_type}"
 
             for k, shader_file_path in enumerate(cur_dict):
                 if (len(cur_dict[shader_file_path])) <= 0:
-                    raise Exception(f"Declarations error for keyword: {self.keyword}. No usages in shader file: {shader_file_path}")
+                    return f"Declarations error for keyword: {self.keyword}. No usages in shader file: {shader_file_path}"
 
         # Usages
         if len(self.shader_usages) <=0:
-            raise Exception(f"No usages for keyword: {self.keyword}")
+            return f"No usages for keyword: {self.keyword}"
 
         for j, shader_file_path in enumerate(self.shader_usages):
 
             if (len(self.shader_usages[shader_file_path])) <= 0:
-                raise Exception(f"Usages error for keyword: {self.keyword}. No usages in shader file: {shader_file_path}")
+                return f"Usages error for keyword: {self.keyword}. No usages in shader file: {shader_file_path}"
 
+        return ""
 
     def to_string_list(self, start_col, source_url_root):
         ret = []
@@ -325,10 +326,9 @@ list = []
 for keyword in sorted(keywords_dict.keys()):
     list.append([keyword])
 
-    try:
-        keywords_dict[keyword].validate()
-    except Exception as e:
-        print('Exception:', e)
+    validation_message = keywords_dict[keyword].validate()
+    if len(validation_message) > 0:
+        list.append(["","Error",keyword])
         continue
 
     list.extend(keywords_dict[keyword].to_string_list(start_col=1, source_url_root= args.source_url_root))
