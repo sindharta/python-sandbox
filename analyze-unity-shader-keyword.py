@@ -164,7 +164,7 @@ class ShaderKeyword:
                 out_col_list[start_col + 2] = f"{source_url_root}/{file_path}#L{usage_line}"
 
             out_line_list.append(out_col_list)
-            l = self.__create_empty_string_list(start_col)
+            out_col_list = self.__create_empty_string_list(start_col)
 
         pass
 
