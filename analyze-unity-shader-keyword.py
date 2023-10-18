@@ -305,7 +305,7 @@ for i, keyword in enumerate(keywords_dict):
 
     list.extend(keywords_dict[keyword].to_string_list(start_col=1, source_url_root= args.source_url_root))
 
-header_row = ["Keyword","","Type","FilePath", "LineNumber", "LineContents", "URL"]
+header_row = ["Keyword","","Type","FilePath", "LineNo", "LineContents", "URL"]
 write_to_csv(args.output, list, header_row)
 
 # print
