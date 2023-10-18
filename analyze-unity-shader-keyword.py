@@ -1,3 +1,6 @@
+# Example of how to use:
+# py analyze-unity-shader-keyword.py -d <package_path>/com.unity.render-pipelines.universal@15.0.6 -r https://github.com/Unity-Technologies/Graphics/blob/2023.1/staging/Packages/com.unity.render-pipelines.universal
+
 from argparse import ArgumentParser
 import csv
 import os
