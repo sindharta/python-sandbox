@@ -75,7 +75,7 @@ class ShaderKeyword:
     def __init__(self, kw):
         self.keyword = kw
         self.declarations = {}
-        self.usages = {}
+        self.shader_usages = {}
 
     def add_declaration(self, pragma_type, shader_file_path, line_number, desc):
         # Declarations
@@ -90,10 +90,10 @@ class ShaderKeyword:
 
     def get_or_add_usage(self, shader_file_path):
 
-        if not shader_file_path in self.usages:
-            cur_shader_keyword.usages[shader_file_path] = list()
+        if not shader_file_path in self.shader_usages:
+            cur_shader_keyword.shader_usages[shader_file_path] = list()
 
-        return cur_shader_keyword.usages[shader_file_path]
+        return cur_shader_keyword.shader_usages[shader_file_path]
 
     def validate(self):
 
@@ -112,12 +112,12 @@ class ShaderKeyword:
                     raise Exception(f"Declarations error for keyword: {self.keyword}. No usages in shader file: {shader_file_path}")
 
         # Usages
-        if len(self.usages) <=0:
+        if len(self.shader_usages) <=0:
             raise Exception(f"No usages for keyword: {self.keyword}")
 
-        for j, shader_file_path in enumerate(self.usages):
+        for j, shader_file_path in enumerate(self.shader_usages):
 
-            if (len(self.usages[shader_file_path])) <= 0:
+            if (len(self.shader_usages[shader_file_path])) <= 0:
                 raise Exception(f"Usages error for keyword: {self.keyword}. No usages in shader file: {shader_file_path}")
 
 
@@ -145,10 +145,10 @@ class ShaderKeyword:
         l = self.__create_empty_string_list(start_col)
         l[start_col] = "Usages"
 
-        for j, shader_file_path in enumerate(self.usages):
+        for j, shader_file_path in enumerate(self.shader_usages):
             l[start_col + 2] = shader_file_path
 
-            for (usage_line, line_content) in self.usages[shader_file_path]:
+            for (usage_line, line_content) in self.shader_usages[shader_file_path]:
                 l[start_col + 3] = usage_line
                 l[start_col + 4] = line_content
                 ret.append(l)
