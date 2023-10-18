@@ -294,7 +294,7 @@ for declaration_line_index, line in enumerate(lines):
 
 # convert to list
 list = []
-for i, keyword in enumerate(keywords_dict):
+for keyword in sorted(keywords_dict.keys()):
     list.append([keyword])
 
     try:
