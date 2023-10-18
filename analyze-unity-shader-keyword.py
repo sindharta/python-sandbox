@@ -53,7 +53,11 @@ def run_grep(input_dir, pattern, include_file_extensions):
     proc = subprocess.run(["grep", "-Hrn", pattern, input_dir, "--include=*.{" + include_file_extensions + "}"], capture_output=True, text=True)
 
     grep_result = proc.stdout
-    return grep_result.splitlines()
+    if (grep_result):
+        return grep_result.splitlines()
+    else:
+        return []
+
 
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -258,6 +262,10 @@ for declaration_line_index, line in enumerate(lines):
     for index, keyword in enumerate(tokens[keyword_start_index:], keyword_start_index):
         if keyword == "_" or keyword == "__":
             continue
+
+        # break out of comments
+        if keyword.startswith("//"):
+            break
 
         #print(keyword, index, keyword_tokens_in_line)
         if not keyword in keywords_dict:
