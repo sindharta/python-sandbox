@@ -274,7 +274,8 @@ for declaration_line_index, line in enumerate(lines):
         cur_shader_keyword = keywords_dict[keyword]
 
         # Declarations
-        cur_shader_keyword.add_declaration(pragma_type, shader_file_path,declaration_line_number, keyword_tokens_in_line)
+        usage_line_content = rem_token_0 + " " + " ".join(tokens[1:])
+        cur_shader_keyword.add_declaration(pragma_type, shader_file_path,declaration_line_number, usage_line_content)
 
         #break early for debugging
         # if declaration_line_index >= 10:
