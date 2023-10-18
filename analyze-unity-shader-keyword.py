@@ -61,7 +61,6 @@ def run_grep(input_dir, pattern, include_file_extensions):
 # returns (path, line:number, remaining)
 def split_path_and_line(input_dir, path_and_line):
     tokens = path_and_line.replace(input_dir,"")[1:].split(':') # use local_path relative to input_dir
-    print(path_and_line)
     return (tokens[0], tokens[1], " ".join(tokens[2:]))
 
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------
