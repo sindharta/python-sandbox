@@ -143,7 +143,7 @@ class ShaderKeyword:
 
         # Usages
         l = self.__create_empty_string_list(start_col)
-        l[start_col] = "Usages"
+        l[start_col] = "Shader Usages"
 
         for j, shader_file_path in enumerate(self.shader_usages):
             l[start_col + 2] = shader_file_path
