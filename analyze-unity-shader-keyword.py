@@ -46,10 +46,11 @@ def write_to_csv(outputFileName, dataList, header_row = []):
 
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def run_grep(input_dir, pattern):
+# includeFileExtensions: can contain multiple extensions, ex: "shader,hlsl"
+def run_grep(input_dir, pattern, include_file_extensions):
 
     # -Hrn with line numbers
-    proc = subprocess.run(["grep", "-Hrn", pattern, input_dir, "--include=*.{shader,hlsl,cg,cginc}"], capture_output=True, text=True)
+    proc = subprocess.run(["grep", "-Hrn", pattern, input_dir, "--include=*.{" + include_file_extensions + "}"], capture_output=True, text=True)
 
     grep_result = proc.stdout
     return grep_result.splitlines()
@@ -162,6 +163,8 @@ class ShaderKeyword:
 
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+shader_file_extensions = "shader,hlsl,cg,cginc"
+
 parser = ArgumentParser()
 
 parser.add_argument('--directory', '-d', required=True, help='The directory of the shader files')
@@ -183,7 +186,7 @@ if isError:
 
 
 
-lines = run_grep(input_dir, "'#pragma\smulti_compile\|#pragma\sshader_feature'")
+lines = run_grep(input_dir, "'#pragma\smulti_compile\|#pragma\sshader_feature'", shader_file_extensions)
 
 special_pragma_types = set()
 
@@ -248,7 +251,7 @@ for declaration_line_index, line in enumerate(lines):
         keywords_grepped.add(keyword)
 
 
-        usage_lines = run_grep(input_dir, keyword)
+        usage_lines = run_grep(input_dir, keyword, shader_file_extensions)
 
 
         for usage_line in usage_lines:
