@@ -126,7 +126,7 @@ class ShaderKeyword:
                 raise Exception(f"Usages error for keyword: {self.keyword}. No usages in shader file: {shader_file_path}")
 
 
-    def to_string_list(self, start_col):
+    def to_string_list(self, start_col, source_url_root):
         ret = []
 
         # Declarations
@@ -139,30 +139,37 @@ class ShaderKeyword:
             for k, shader_file_path in enumerate(cur_dict):
                 l[start_col + 2] = shader_file_path
 
-                for (usage_line, line_content) in cur_dict[shader_file_path]:
-                    l[start_col + 3] = usage_line
-                    l[start_col + 4] = line_content
-                    ret.append(l)
-                    l = self.__create_empty_string_list(start_col)
+                self.__extend_list_on_usage_dict(cur_dict[shader_file_path], start_col + 3, source_url_root, shader_file_path, l, ret)
 
-
-        # Usages
+        # Shader Usages
         l = self.__create_empty_string_list(start_col)
         l[start_col] = "Sh Usages"
-
         for j, shader_file_path in enumerate(self.shader_usages):
             l[start_col + 2] = shader_file_path
+            self.__extend_list_on_usage_dict(self.shader_usages[shader_file_path], start_col + 3, source_url_root, shader_file_path, l, ret)
 
-            for (usage_line, line_content) in self.shader_usages[shader_file_path]:
-                l[start_col + 3] = usage_line
-                l[start_col + 4] = line_content
-                ret.append(l)
-                l = self.__create_empty_string_list(start_col)
+        l = self.__create_empty_string_list(start_col)
+        l[start_col] = "C# Usages"
+        for j, cs_file_path in enumerate(self.cs_usages):
+            l[start_col + 2] = cs_file_path
+            self.__extend_list_on_usage_dict(self.cs_usages[cs_file_path], start_col + 3, source_url_root, cs_file_path, l, ret)
 
         return ret
 
+    def __extend_list_on_usage_dict(self, dictionary, start_col, source_url_root, file_path, out_col_list, out_line_list):
+        for (usage_line, line_content) in dictionary:
+            out_col_list[start_col] = usage_line
+            out_col_list[start_col + 1] = line_content
+            if len(source_url_root) > 0:
+                out_col_list[start_col + 2] = f"{source_url_root}/{file_path}#L{usage_line}"
+
+            out_line_list.append(out_col_list)
+            l = self.__create_empty_string_list(start_col)
+
+        pass
+
     def __create_empty_string_list(self, num_empty_elements):
-        return [""] * (num_empty_elements + 5)
+        return [""] * (num_empty_elements + 6)
 
 
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -173,6 +180,7 @@ parser = ArgumentParser()
 
 parser.add_argument('--directory', '-d', required=True, help='The directory of the shader files')
 parser.add_argument('--output', '-o',required=False, default="shader.csv", help='The output file (default: shader.csv)')
+parser.add_argument('--source-url-root', '-r',required=False, default="", help='The URL root of the source code (default: "")')
 
 args = parser.parse_args()
 
@@ -295,7 +303,7 @@ for i, keyword in enumerate(keywords_dict):
         print('Exception:', e)
         continue
 
-    list.extend(keywords_dict[keyword].to_string_list(start_col=1))
+    list.extend(keywords_dict[keyword].to_string_list(start_col=1, source_url_root= args.source_url_root))
 
 header_row = ["Keyword","","Type","FilePath", "LineNumber", "LineContents"]
 write_to_csv(args.output, list, header_row)
