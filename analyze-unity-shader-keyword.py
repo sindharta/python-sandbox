@@ -34,15 +34,17 @@ def is_special_pragma_type(token):
 
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def write_keywords_dict_to_csv(outputFileName, keywords_dict):
+def write_to_csv(outputFileName, dataList, header_row = []):
     with open(outputFileName, 'w', newline='', encoding='utf-8') as f:
-
         writer = csv.writer(f)
-        for i, key in enumerate(keywords_dict):
-            
-            writer.writerow([key])
+        if (len(header_row) > 0):
+            writer.writerow(header_row)
 
+        for d in dataList:
+            writer.writerow(d)
     print(f"Data written to {outputFileName}")
+
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 def run_grep(input_dir, pattern):
 
@@ -55,8 +57,8 @@ def run_grep(input_dir, pattern):
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # file_path: ex: <input_dir>/Shaders/2D/Light2D.shader:20:
+# returns (path, line:number, remaining)
 def split_path_and_line(input_dir, path_and_line):
-
     tokens = path_and_line.replace(input_dir,"")[1:].split(':') # use local_path relative to input_dir
     return (tokens[0], tokens[1], " ".join(tokens[2:]))
 
@@ -144,11 +146,11 @@ class ShaderKeyword:
         l[start_col] = "Usages"
 
         for j, shader_file_path in enumerate(self.usages):
-            l[start_col + 1] = shader_file_path
+            l[start_col + 2] = shader_file_path
 
             for (usage_line, line_content) in self.usages[shader_file_path]:
-                l[start_col + 2] = usage_line
-                l[start_col + 3] = line_content
+                l[start_col + 3] = usage_line
+                l[start_col + 4] = line_content
                 ret.append(l)
                 l = self.__create_empty_string_list(start_col)
 
@@ -276,6 +278,10 @@ for i, keyword in enumerate(keywords_dict):
 
     list.extend(keywords_dict[keyword].to_string_list(start_col=1))
 
+header_row = ["Keyword","","Type","FilePath", "LineNumber", "LineContents"]
+write_to_csv(args.output, list, header_row)
+
 # print
 for line in list:
     print(line)
+
