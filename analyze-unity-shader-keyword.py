@@ -328,8 +328,7 @@ for keyword in sorted(keywords_dict.keys()):
 
     validation_message = keywords_dict[keyword].validate()
     if len(validation_message) > 0:
-        list.append(["","Error",keyword])
-        continue
+        list.append(["","Error",validation_message])
 
     list.extend(keywords_dict[keyword].to_string_list(start_col=1, source_url_root= args.source_url_root))
 
