@@ -320,20 +320,20 @@ for declaration_line_index, line in enumerate(lines):
             keyword_usage.append( (usage_line_number, usage_line_content) )
 
 # convert to list
-list = []
+csv_list = []
 for keyword in sorted(keywords_dict.keys()):
-    list.append([keyword])
+    csv_list.append([keyword])
 
     validation_message = keywords_dict[keyword].validate()
     if len(validation_message) > 0:
-        list.append(["","Error",validation_message])
+        csv_list.append(["", "Error", validation_message])
 
-    list.extend(keywords_dict[keyword].to_string_list(start_col=1, source_url_root= args.source_url_root))
+    csv_list.extend(keywords_dict[keyword].to_string_list(start_col=1, source_url_root= args.source_url_root))
 
 header_row = [[ f"Total Keywords: {len(keywords_dict)}"], ["Keyword","","Type","FilePath", "LineNo", "LineContents", "URL"]]
-write_to_csv(args.output, list, header_row)
+write_to_csv(args.output, csv_list, header_row)
 
 # print
-for line in list:
+for line in csv_list:
     print(line)
 
