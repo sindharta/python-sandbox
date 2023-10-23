@@ -351,6 +351,8 @@ for keyword in sorted(keywords_dict.keys()):
 # combine errors
 if len(error_keyword_list) > 0:
     csv_list.append([])
+    csv_list.append([])
+    csv_list.append([])
     csv_list.append(["Error Keywords"])
     for keyword in error_keyword_list:
         csv_list.append(["", keyword])
