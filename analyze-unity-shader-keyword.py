@@ -311,31 +311,31 @@ for declaration_line_index, line in enumerate(lines):
 
             usage_tokens = usage_line.rsplit(',', 1)
 
-            (usage_path, usage_line_number, rem_token_0) = split_path_and_line(input_dir, usage_tokens[0])
+            (rel_usage_path, usage_line_number, rem_token_0) = split_path_and_line(input_dir, usage_tokens[0])
             print(usage_tokens[0])
 
-            if temp_path != usage_path:
-                temp_contents = read_file_all_lines(f"{input_dir}/{usage_path}")
-                temp_path = usage_path
+            if temp_path != rel_usage_path:
+                temp_contents = read_file_all_lines(f"{input_dir}/{rel_usage_path}")
+                temp_path = rel_usage_path
 
             start_line_no = usage_line_number - num_related_lines
             end_line_no   = usage_line_number + num_related_lines
 
-            cur_shader_keyword.add_shader_usage(usage_path, usage_line_number, temp_contents[start_line_no : end_line_no] )
+            cur_shader_keyword.add_shader_usage(rel_usage_path, usage_line_number, temp_contents[start_line_no: end_line_no])
 
         #cs
         cs_usage_lines = run_grep(input_dir, keyword, "cs")
         for usage_line in cs_usage_lines:
             usage_tokens = usage_line.rsplit(',', 1)
-            (usage_path, usage_line_number, rem_token_0) = split_path_and_line(input_dir, usage_tokens[0])
+            (rel_usage_path, usage_line_number, rem_token_0) = split_path_and_line(input_dir, usage_tokens[0])
 
-            if temp_path != usage_path:
-                temp_contents = read_file_all_lines(f"{input_dir}/{usage_path}")
-                temp_path = usage_path
+            if temp_path != rel_usage_path:
+                temp_contents = read_file_all_lines(f"{input_dir}/{rel_usage_path}")
+                temp_path = rel_usage_path
 
             start_line_no = usage_line_number - num_related_lines
             end_line_no   = usage_line_number + num_related_lines
-            cur_shader_keyword.get_or_add_cs_usage(usage_path, usage_line_number, temp_contents[start_line_no : end_line_no] )
+            cur_shader_keyword.get_or_add_cs_usage(rel_usage_path, usage_line_number, temp_contents[start_line_no: end_line_no])
 
 # convert to list
 csv_list = []
