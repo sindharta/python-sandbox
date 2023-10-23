@@ -188,11 +188,11 @@ class ShaderKeyword:
 
     def __create_usage_list(self, dictionary, start_col, source_url_root, file_path):
         ret = []
-        for (usage_line, line_content) in dictionary:
+        for (usage_line, line_contents) in dictionary:
             l = self.__create_empty_string_list(start_col)
 
             l[start_col] = usage_line
-            l[start_col + 1] = line_content
+            l[start_col + 1] = "".join(line_contents) # convert a list to a multiline string
             if len(source_url_root) > 0:
                 l[start_col + 2] = f"{source_url_root}/{file_path}#L{usage_line}"
 
