@@ -75,7 +75,7 @@ def split_path_and_line(input_dir, path_and_line):
 # Definition:
 # _SHADOWS_SOFT -> multi_compile -> A.hlsl -> [(line 10, [lines around the actual_line] ), (line 20, [lines around the actual_line])]
 #                                   B.hlsl -> [(line 90, [lines around the actual_line] ), (line 80, [lines around the actual_line])]
-# Usage:
+# Shader Usage / CS Usage:
 # _SHADOWS_SOFT -> A.hlsl -> [(line 10, [lines around the actual_line] ), (line 20, [lines around the actual_line] )]
 #                  B.hlsl -> [(line 90, [lines around the actual_line] ), (line 80, [lines around the actual_line] )]
 
