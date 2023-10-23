@@ -1,5 +1,5 @@
 # Example of how to use:
-# py analyze-unity-shader-keyword.py -d <package_path>/com.unity.render-pipelines.universal@15.0.6 -r https://github.com/Unity-Technologies/Graphics/blob/2023.1/staging/Packages/com.unity.render-pipelines.universal
+# py analyze-unity-shader-keyword.py -d <package_path>/com.unity.render-pipelines.universal@15.0.6 -s 2 -r https://github.com/Unity-Technologies/Graphics/blob/2023.1/staging/Packages/com.unity.render-pipelines.universal
 
 from argparse import ArgumentParser
 import csv
@@ -212,10 +212,12 @@ parser = ArgumentParser()
 parser.add_argument('--directory', '-d', required=True, help='The directory of the shader files')
 parser.add_argument('--output', '-o',required=False, default="shader.csv", help='The output file (default: shader.csv)')
 parser.add_argument('--source-url-root', '-r',required=False, default="", help='The URL root of the source code (default: "")')
+parser.add_argument('--num-surrounding-usage-lines', '-s',required=False, default=2, help='The number of surrounding usage lines (default: 2)')
 
 args = parser.parse_args()
 
 input_dir = args.directory
+num_surrounding_usage_lines = int(args.num_surrounding_usage_lines)
 
 # Error checking
 isError = False
@@ -269,8 +271,6 @@ for declaration_line_index, line in enumerate(lines):
         print("Error: this program needs to be upgraded to handle the remaining of token 0: ", rem_token_0)
         exit()
 
-    num_related_lines = 1
-
     # loop all keywords in this declaration line
     for index, keyword in enumerate(tokens[keyword_start_index:], keyword_start_index):
         if keyword == "_" or keyword == "__":
@@ -318,8 +318,8 @@ for declaration_line_index, line in enumerate(lines):
                 temp_contents = read_file_all_lines(f"{input_dir}/{rel_usage_path}")
                 temp_path = rel_usage_path
 
-            start_line_no = usage_line_number - num_related_lines
-            end_line_no   = usage_line_number + num_related_lines
+            start_line_no = usage_line_number - num_surrounding_usage_lines - 1
+            end_line_no   = usage_line_number + num_surrounding_usage_lines
 
             cur_shader_keyword.add_shader_usage(rel_usage_path, usage_line_number, temp_contents[start_line_no: end_line_no])
 
@@ -333,8 +333,8 @@ for declaration_line_index, line in enumerate(lines):
                 temp_contents = read_file_all_lines(f"{input_dir}/{rel_usage_path}")
                 temp_path = rel_usage_path
 
-            start_line_no = usage_line_number - num_related_lines
-            end_line_no   = usage_line_number + num_related_lines
+            start_line_no = usage_line_number - num_surrounding_usage_lines - 1
+            end_line_no   = usage_line_number + num_surrounding_usage_lines
             cur_shader_keyword.get_or_add_cs_usage(rel_usage_path, usage_line_number, temp_contents[start_line_no: end_line_no])
 
 # convert to list
