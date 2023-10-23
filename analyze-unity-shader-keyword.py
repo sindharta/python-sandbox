@@ -88,7 +88,7 @@ class ShaderKeyword:
 
     def add_declaration(self, pragma_type, shader_file_path, line_number, desc):
         # Declarations
-        # _SHADOWS_SOFT -> multi_compile -> A.hlsl -> [(line 10, actual_line), (line 20, actual_line)]
+        # _SHADOWS_SOFT -> A.hlsl -> [(line 10, [lines around the actual_line] ), (line 20, [lines around the actual_line] )]
         if not pragma_type in self.declarations:
             self.declarations[pragma_type] = {}
 
@@ -305,7 +305,7 @@ for declaration_line_index, line in enumerate(lines):
             # print(usage_path, " " * 4, usage_line_content)
 
             keyword_usage = cur_shader_keyword.get_or_add_shader_usage(usage_path)
-            keyword_usage.append( (usage_line_number, usage_line_content) )
+            keyword_usage.append( (usage_line_number, [usage_line_content]) )
 
         #cs
         cs_usage_lines = run_grep(input_dir, keyword, "cs")
@@ -317,7 +317,7 @@ for declaration_line_index, line in enumerate(lines):
             # print(usage_path, " " * 4, usage_line_content)
 
             keyword_usage = cur_shader_keyword.get_or_add_cs_usage(usage_path)
-            keyword_usage.append( (usage_line_number, usage_line_content) )
+            keyword_usage.append( (usage_line_number, [usage_line_content]) )
 
 # convert to list
 csv_list = []
