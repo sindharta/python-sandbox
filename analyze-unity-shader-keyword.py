@@ -312,7 +312,6 @@ for declaration_line_index, line in enumerate(lines):
             usage_tokens = usage_line.rsplit(',', 1)
 
             (rel_usage_path, usage_line_number, rem_token_0) = split_path_and_line(input_dir, usage_tokens[0])
-            print(usage_tokens[0])
 
             if temp_path != rel_usage_path:
                 temp_contents = read_file_all_lines(f"{input_dir}/{rel_usage_path}")
