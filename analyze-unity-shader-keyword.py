@@ -335,7 +335,7 @@ for declaration_line_index, line in enumerate(lines):
 
             start_line_no = usage_line_number - num_surrounding_usage_lines - 1
             end_line_no   = usage_line_number + num_surrounding_usage_lines
-            cur_shader_keyword.get_or_add_cs_usage(rel_usage_path, usage_line_number, temp_contents[start_line_no: end_line_no])
+            cur_shader_keyword.add_cs_usage(rel_usage_path, usage_line_number, temp_contents[start_line_no: end_line_no])
 
 # convert to list
 csv_list = []
