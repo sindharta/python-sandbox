@@ -1,5 +1,5 @@
 # Example of how to use:
-# py analyze-unity-shader-keyword.py -d <package_path>/com.unity.render-pipelines.universal@15.0.6 -r https://github.com/Unity-Technologies/Graphics/blob/2023.1/staging/Packages/com.unity.render-pipelines.universal
+# py analyze-unity-shader-keyword.py -d <package_path>/com.unity.render-pipelines.universal@15.0.6 -s 2 -r https://github.com/Unity-Technologies/Graphics/blob/2023.1/staging/Packages/com.unity.render-pipelines.universal
 
 from argparse import ArgumentParser
 import csv
@@ -62,22 +62,29 @@ def run_grep(input_dir, pattern, include_file_extensions):
         return []
 
 
+def read_file_all_lines(filePath):
+    ret = []
+    with open(filePath, encoding='utf-8') as f:
+        ret = f.readlines()
+
+    return ret
+
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # file_path: ex: <input_dir>/Shaders/2D/Light2D.shader:20:
 # returns (path, line:number, remaining)
 def split_path_and_line(input_dir, path_and_line):
     tokens = path_and_line.replace(input_dir,"")[1:].split(':') # use local_path relative to input_dir
-    return (tokens[0], tokens[1], " ".join(tokens[2:]))
+    return (tokens[0], int(tokens[1]), " ".join(tokens[2:]))
 
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # Definition:
-# _SHADOWS_SOFT -> multi_compile -> A.hlsl -> [(line 10, actual_line), (line 20, actual_line)]
-#                                   B.hlsl -> [(line 90, actual_line), (line 80, actual_line)]
-# Usage:
-# _SHADOWS_SOFT -> A.hlsl -> [(line 10, actual_line), (line 20, actual_line)]
-#                  B.hlsl -> [(line 90, actual_line), (line 80, actual_line)]
+# _SHADOWS_SOFT -> multi_compile -> A.hlsl -> [(line 10, [line_contents] ), (line 20, [line_contents])]
+#                                   B.hlsl -> [(line 90, [line_contents] ), (line 80, [line_contents])]
+# Shader Usage / CS Usage:
+# _SHADOWS_SOFT -> A.hlsl -> [(line 10, [line_contents] ), (line 20, [line_contents] )]
+#                  B.hlsl -> [(line 90, [line_contents] ), (line 80, [line_contents] )]
 
 class ShaderKeyword:
     def __init__(self, kw):
@@ -86,26 +93,26 @@ class ShaderKeyword:
         self.shader_usages = {}
         self.cs_usages = {}
 
-    def add_declaration(self, pragma_type, shader_file_path, line_number, desc):
+    def add_declaration(self, pragma_type, shader_file_path, line_number, line_contents):
         # Declarations
-        # _SHADOWS_SOFT -> multi_compile -> A.hlsl -> [(line 10, actual_line), (line 20, actual_line)]
-        if not pragma_type in self.declarations:
+        # _SHADOWS_SOFT -> A.hlsl -> [(line 10, [line_contents] ), (line 20, [line_contents] )]
+        if pragma_type not in self.declarations:
             self.declarations[pragma_type] = {}
 
-        if not shader_file_path in self.declarations[pragma_type]:
+        if shader_file_path not in self.declarations[pragma_type]:
             self.declarations[pragma_type][shader_file_path] = list()
 
-        self.declarations[pragma_type][shader_file_path].append((line_number, desc))
+        self.declarations[pragma_type][shader_file_path].append((line_number, line_contents))
 
-    def get_or_add_shader_usage(self, shader_file_path):
-        if not shader_file_path in self.shader_usages:
+    def add_shader_usage(self, shader_file_path, line_number, line_contents):
+        if shader_file_path not in self.shader_usages:
             cur_shader_keyword.shader_usages[shader_file_path] = list()
-        return cur_shader_keyword.shader_usages[shader_file_path]
+        cur_shader_keyword.shader_usages[shader_file_path].append((line_number, line_contents))
 
-    def get_or_add_cs_usage(self, shader_file_path):
-        if not shader_file_path in self.cs_usages:
+    def add_cs_usage(self, shader_file_path, line_number, line_contents):
+        if shader_file_path not in self.cs_usages:
             cur_shader_keyword.cs_usages[shader_file_path] = list()
-        return cur_shader_keyword.cs_usages[shader_file_path]
+        cur_shader_keyword.cs_usages[shader_file_path].append((line_number, line_contents))
 
     def validate(self):
 
@@ -181,11 +188,11 @@ class ShaderKeyword:
 
     def __create_usage_list(self, dictionary, start_col, source_url_root, file_path):
         ret = []
-        for (usage_line, line_content) in dictionary:
+        for (usage_line, line_contents) in dictionary:
             l = self.__create_empty_string_list(start_col)
 
             l[start_col] = usage_line
-            l[start_col + 1] = line_content
+            l[start_col + 1] = "".join(line_contents) # convert a list to a multiline string
             if len(source_url_root) > 0:
                 l[start_col + 2] = f"{source_url_root}/{file_path}#L{usage_line}"
 
@@ -205,10 +212,12 @@ parser = ArgumentParser()
 parser.add_argument('--directory', '-d', required=True, help='The directory of the shader files')
 parser.add_argument('--output', '-o',required=False, default="shader.csv", help='The output file (default: shader.csv)')
 parser.add_argument('--source-url-root', '-r',required=False, default="", help='The URL root of the source code (default: "")')
+parser.add_argument('--num-surrounding-usage-lines', '-s',required=False, default=2, help='The number of surrounding usage lines (default: 2)')
 
 args = parser.parse_args()
 
 input_dir = args.directory
+num_surrounding_usage_lines = int(args.num_surrounding_usage_lines)
 
 # Error checking
 isError = False
@@ -291,6 +300,9 @@ for declaration_line_index, line in enumerate(lines):
 
         keywords_grepped.add(keyword)
 
+        temp_path = ""
+        temp_contents = []
+
         #shader
         shader_usage_lines = run_grep(input_dir, keyword, shader_file_extensions)
         for usage_line in shader_usage_lines:
@@ -299,25 +311,30 @@ for declaration_line_index, line in enumerate(lines):
 
             usage_tokens = usage_line.rsplit(',', 1)
 
-            (usage_path, usage_line_number, rem_token_0) = split_path_and_line(input_dir, usage_tokens[0])
+            (rel_usage_path, usage_line_number, rem_token_0) = split_path_and_line(input_dir, usage_tokens[0])
 
-            usage_line_content = rem_token_0 + " " + " ".join(usage_tokens[1:])
-            # print(usage_path, " " * 4, usage_line_content)
+            if temp_path != rel_usage_path:
+                temp_contents = read_file_all_lines(f"{input_dir}/{rel_usage_path}")
+                temp_path = rel_usage_path
 
-            keyword_usage = cur_shader_keyword.get_or_add_shader_usage(usage_path)
-            keyword_usage.append( (usage_line_number, usage_line_content) )
+            start_line_no = usage_line_number - num_surrounding_usage_lines - 1
+            end_line_no   = usage_line_number + num_surrounding_usage_lines
+
+            cur_shader_keyword.add_shader_usage(rel_usage_path, usage_line_number, temp_contents[start_line_no: end_line_no])
 
         #cs
         cs_usage_lines = run_grep(input_dir, keyword, "cs")
         for usage_line in cs_usage_lines:
             usage_tokens = usage_line.rsplit(',', 1)
-            (usage_path, usage_line_number, rem_token_0) = split_path_and_line(input_dir, usage_tokens[0])
+            (rel_usage_path, usage_line_number, rem_token_0) = split_path_and_line(input_dir, usage_tokens[0])
 
-            usage_line_content = rem_token_0 + " " + " ".join(usage_tokens[1:])
-            # print(usage_path, " " * 4, usage_line_content)
+            if temp_path != rel_usage_path:
+                temp_contents = read_file_all_lines(f"{input_dir}/{rel_usage_path}")
+                temp_path = rel_usage_path
 
-            keyword_usage = cur_shader_keyword.get_or_add_cs_usage(usage_path)
-            keyword_usage.append( (usage_line_number, usage_line_content) )
+            start_line_no = usage_line_number - num_surrounding_usage_lines - 1
+            end_line_no   = usage_line_number + num_surrounding_usage_lines
+            cur_shader_keyword.add_cs_usage(rel_usage_path, usage_line_number, temp_contents[start_line_no: end_line_no])
 
 # convert to list
 csv_list = []
