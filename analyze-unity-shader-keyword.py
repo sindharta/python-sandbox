@@ -86,26 +86,26 @@ class ShaderKeyword:
         self.shader_usages = {}
         self.cs_usages = {}
 
-    def add_declaration(self, pragma_type, shader_file_path, line_number, desc):
+    def add_declaration(self, pragma_type, shader_file_path, line_number, line_contents):
         # Declarations
         # _SHADOWS_SOFT -> A.hlsl -> [(line 10, [line_contents] ), (line 20, [line_contents] )]
-        if not pragma_type in self.declarations:
+        if pragma_type not in self.declarations:
             self.declarations[pragma_type] = {}
 
-        if not shader_file_path in self.declarations[pragma_type]:
+        if shader_file_path not in self.declarations[pragma_type]:
             self.declarations[pragma_type][shader_file_path] = list()
 
-        self.declarations[pragma_type][shader_file_path].append((line_number, desc))
+        self.declarations[pragma_type][shader_file_path].append((line_number, line_contents))
 
-    def get_or_add_shader_usage(self, shader_file_path):
-        if not shader_file_path in self.shader_usages:
+    def add_shader_usage(self, shader_file_path, line_number, line_contents):
+        if shader_file_path not in self.shader_usages:
             cur_shader_keyword.shader_usages[shader_file_path] = list()
-        return cur_shader_keyword.shader_usages[shader_file_path]
+        cur_shader_keyword.shader_usages[shader_file_path].append((line_number, line_contents))
 
-    def get_or_add_cs_usage(self, shader_file_path):
-        if not shader_file_path in self.cs_usages:
+    def add_cs_usage(self, shader_file_path, line_number, line_contents):
+        if shader_file_path not in self.cs_usages:
             cur_shader_keyword.cs_usages[shader_file_path] = list()
-        return cur_shader_keyword.cs_usages[shader_file_path]
+        cur_shader_keyword.cs_usages[shader_file_path].append((line_number, line_contents))
 
     def validate(self):
 
@@ -304,8 +304,7 @@ for declaration_line_index, line in enumerate(lines):
             usage_line_content = rem_token_0 + " " + " ".join(usage_tokens[1:])
             # print(usage_path, " " * 4, usage_line_content)
 
-            keyword_usage = cur_shader_keyword.get_or_add_shader_usage(usage_path)
-            keyword_usage.append( (usage_line_number, [usage_line_content]) )
+            cur_shader_keyword.add_shader_usage(usage_path, usage_line_number, [usage_line_content])
 
         #cs
         cs_usage_lines = run_grep(input_dir, keyword, "cs")
@@ -316,8 +315,7 @@ for declaration_line_index, line in enumerate(lines):
             usage_line_content = rem_token_0 + " " + " ".join(usage_tokens[1:])
             # print(usage_path, " " * 4, usage_line_content)
 
-            keyword_usage = cur_shader_keyword.get_or_add_cs_usage(usage_path)
-            keyword_usage.append( (usage_line_number, [usage_line_content]) )
+            cur_shader_keyword.get_or_add_cs_usage(usage_path, usage_line_number, [usage_line_content] )
 
 # convert to list
 csv_list = []
