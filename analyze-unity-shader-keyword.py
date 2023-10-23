@@ -62,13 +62,20 @@ def run_grep(input_dir, pattern, include_file_extensions):
         return []
 
 
+def read_file_all_lines(filePath):
+    ret = []
+    with open(filePath, encoding='utf-8') as f:
+        ret = f.readlines()
+
+    return ret
+
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # file_path: ex: <input_dir>/Shaders/2D/Light2D.shader:20:
 # returns (path, line:number, remaining)
 def split_path_and_line(input_dir, path_and_line):
     tokens = path_and_line.replace(input_dir,"")[1:].split(':') # use local_path relative to input_dir
-    return (tokens[0], tokens[1], " ".join(tokens[2:]))
+    return (tokens[0], int(tokens[1]), " ".join(tokens[2:]))
 
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -262,6 +269,8 @@ for declaration_line_index, line in enumerate(lines):
         print("Error: this program needs to be upgraded to handle the remaining of token 0: ", rem_token_0)
         exit()
 
+    num_related_lines = 1
+
     # loop all keywords in this declaration line
     for index, keyword in enumerate(tokens[keyword_start_index:], keyword_start_index):
         if keyword == "_" or keyword == "__":
@@ -291,6 +300,9 @@ for declaration_line_index, line in enumerate(lines):
 
         keywords_grepped.add(keyword)
 
+        temp_path = ""
+        temp_contents = []
+
         #shader
         shader_usage_lines = run_grep(input_dir, keyword, shader_file_extensions)
         for usage_line in shader_usage_lines:
@@ -300,11 +312,16 @@ for declaration_line_index, line in enumerate(lines):
             usage_tokens = usage_line.rsplit(',', 1)
 
             (usage_path, usage_line_number, rem_token_0) = split_path_and_line(input_dir, usage_tokens[0])
+            print(usage_tokens[0])
 
-            usage_line_content = rem_token_0 + " " + " ".join(usage_tokens[1:])
-            # print(usage_path, " " * 4, usage_line_content)
+            if temp_path != usage_path:
+                temp_contents = read_file_all_lines(f"{input_dir}/{usage_path}")
+                temp_path = usage_path
 
-            cur_shader_keyword.add_shader_usage(usage_path, usage_line_number, [usage_line_content])
+            start_line_no = usage_line_number - num_related_lines
+            end_line_no   = usage_line_number + num_related_lines
+
+            cur_shader_keyword.add_shader_usage(usage_path, usage_line_number, temp_contents[start_line_no : end_line_no] )
 
         #cs
         cs_usage_lines = run_grep(input_dir, keyword, "cs")
@@ -312,10 +329,13 @@ for declaration_line_index, line in enumerate(lines):
             usage_tokens = usage_line.rsplit(',', 1)
             (usage_path, usage_line_number, rem_token_0) = split_path_and_line(input_dir, usage_tokens[0])
 
-            usage_line_content = rem_token_0 + " " + " ".join(usage_tokens[1:])
-            # print(usage_path, " " * 4, usage_line_content)
+            if temp_path != usage_path:
+                temp_contents = read_file_all_lines(f"{input_dir}/{usage_path}")
+                temp_path = usage_path
 
-            cur_shader_keyword.get_or_add_cs_usage(usage_path, usage_line_number, [usage_line_content] )
+            start_line_no = usage_line_number - num_related_lines
+            end_line_no   = usage_line_number + num_related_lines
+            cur_shader_keyword.get_or_add_cs_usage(usage_path, usage_line_number, temp_contents[start_line_no : end_line_no] )
 
 # convert to list
 csv_list = []
