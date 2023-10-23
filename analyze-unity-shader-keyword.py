@@ -73,11 +73,11 @@ def split_path_and_line(input_dir, path_and_line):
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # Definition:
-# _SHADOWS_SOFT -> multi_compile -> A.hlsl -> [(line 10, [related lines] ), (line 20, [related lines])]
-#                                   B.hlsl -> [(line 90, [related lines] ), (line 80, [related lines])]
+# _SHADOWS_SOFT -> multi_compile -> A.hlsl -> [(line 10, [line_contents] ), (line 20, [line_contents])]
+#                                   B.hlsl -> [(line 90, [line_contents] ), (line 80, [line_contents])]
 # Shader Usage / CS Usage:
-# _SHADOWS_SOFT -> A.hlsl -> [(line 10, [related lines] ), (line 20, [related lines] )]
-#                  B.hlsl -> [(line 90, [related lines] ), (line 80, [related lines] )]
+# _SHADOWS_SOFT -> A.hlsl -> [(line 10, [line_contents] ), (line 20, [line_contents] )]
+#                  B.hlsl -> [(line 90, [line_contents] ), (line 80, [line_contents] )]
 
 class ShaderKeyword:
     def __init__(self, kw):
@@ -88,7 +88,7 @@ class ShaderKeyword:
 
     def add_declaration(self, pragma_type, shader_file_path, line_number, desc):
         # Declarations
-        # _SHADOWS_SOFT -> A.hlsl -> [(line 10, [related lines] ), (line 20, [related lines] )]
+        # _SHADOWS_SOFT -> A.hlsl -> [(line 10, [line_contents] ), (line 20, [line_contents] )]
         if not pragma_type in self.declarations:
             self.declarations[pragma_type] = {}
 
