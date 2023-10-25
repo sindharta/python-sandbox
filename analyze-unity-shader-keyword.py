@@ -209,10 +209,12 @@ shader_file_extensions = "shader,hlsl,cg,cginc"
 
 parser = ArgumentParser()
 
-parser.add_argument('--directory', '-d', required=True, help='The directory of the shader files')
+parser.add_argument('--directory', '-d', required=True, help='<Required> The directory of the shader files')
 parser.add_argument('--output', '-o',required=False, default="shader.csv", help='The output file (default: shader.csv)')
 parser.add_argument('--source-url-root', '-r',required=False, default="", help='The URL root of the source code (default: "")')
 parser.add_argument('--num-surrounding-usage-lines', '-s',required=False, default=2, help='The number of surrounding usage lines (default: 2)')
+parser.add_argument('--add-usage-directory','-u', nargs='+', required=False, help='Additional usage directories')
+
 
 args = parser.parse_args()
 
@@ -229,6 +231,13 @@ if not os.path.isdir(input_dir):
 if isError:
     exit()
 
+additional_usage_dirs = []
+for dir in args.add_usage_directory:
+    if not os.path.isdir(dir):
+        print(f"Invalid additional usage dir: {dir}")
+        continue
+
+    additional_usage_dirs.append(dir)
 
 
 lines = run_grep(input_dir, "'#pragma\smulti_compile\|#pragma\sshader_feature'", shader_file_extensions)
