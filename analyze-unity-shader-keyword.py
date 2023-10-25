@@ -234,18 +234,14 @@ class ShaderKeyword:
         return ret
 
     def __create_file_dictionary_summary(self, dic, start_col, start_col_content, source_url_root):
-
         ret = []
         
-        row = self.__create_empty_string_list(start_col)
-        usages_type_item = start_col_content
+        usage_type_item = start_col_content
+        empty_cols = [""] * (start_col - 1) if start_col > 0 else []
 
         for j, file_path in enumerate(dic):
-            row[start_col] = usages_type_item
-            row[start_col + 1] = file_path
-            row[start_col + 2] = f"{source_url_root}/{file_path}"
-            ret.append(row)
-            usages_type_item = ""
+            ret.append([*empty_cols, usage_type_item, file_path,f"{source_url_root}/{file_path}"])
+            usage_type_item = ""
 
         return ret
 
