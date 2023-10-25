@@ -49,11 +49,18 @@ def write_to_csv(outputFileName, dataList, header_rows = []):
 
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-# includeFileExtensions: can contain multiple extensions, ex: "shader,hlsl"
+# input_dir: can be a string or a list of strings
+# include_file_extensions: can contain multiple extensions, ex: "shader,hlsl"
+# An example of the called grep:
+#   grep -Hrn DEBUG_DISPLAY <package_path>/com.unity.render-pipelines.universal@15.0.6/Shaders/2D <package_path>/com.unity.render-pipelines.core@15.0.6 --include=*.{shader,hlsl,cginc,cg}
+
 def run_grep(input_dir, pattern, include_file_extensions):
 
     # -Hrn with line numbers
-    proc = subprocess.run(["grep", "-Hrn", pattern, input_dir, "--include=*.{" + include_file_extensions + "}"], capture_output=True, text=True)
+    if type(input_dir) == list:
+        proc = subprocess.run(["grep", "-Hrn", pattern, *input_dir, "--include=*.{" + include_file_extensions + "}"], capture_output=True, text=True)
+    else:
+        proc = subprocess.run(["grep", "-Hrn", pattern, input_dir, "--include=*.{" + include_file_extensions + "}"], capture_output=True, text=True)
 
     grep_result = proc.stdout
     if (grep_result):
