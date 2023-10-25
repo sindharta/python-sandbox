@@ -332,8 +332,10 @@ for declaration_line_index, line in enumerate(lines):
         temp_contents = []
 
         #shader
-        shader_usage_lines = run_grep(input_dir, keyword, shader_file_extensions)
+        shader_usage_lines = run_grep([input_dir, *additional_usage_dirs], keyword, shader_file_extensions)
         for usage_line in shader_usage_lines:
+
+            print(usage_line)
             if "#pragma" in usage_line:
                 continue
 
@@ -351,7 +353,7 @@ for declaration_line_index, line in enumerate(lines):
             cur_shader_keyword.add_shader_usage(rel_usage_path, usage_line_number, temp_contents[start_line_no: end_line_no])
 
         #cs
-        cs_usage_lines = run_grep(input_dir, keyword, "cs")
+        cs_usage_lines = run_grep([input_dir, *additional_usage_dirs], keyword, "cs")
         for usage_line in cs_usage_lines:
             usage_tokens = usage_line.rsplit(',', 1)
             (rel_usage_path, usage_line_number, rem_token_0) = split_path_and_line(input_dir, usage_tokens[0])
