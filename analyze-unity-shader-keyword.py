@@ -251,12 +251,13 @@ if isError:
     exit()
 
 additional_usage_dirs = []
-for dir in args.add_usage_directory:
-    if not os.path.isdir(dir):
-        print(f"Invalid additional usage dir: {dir}")
-        continue
+if type(args.add_usage_directory) == list:
+    for dir in args.add_usage_directory:
+        if not os.path.isdir(dir):
+            print(f"Invalid additional usage dir: {dir}")
+            continue
 
-    additional_usage_dirs.append(dir)
+        additional_usage_dirs.append(dir)
 
 
 lines = run_grep(input_dir, "'#pragma\smulti_compile\|#pragma\sshader_feature'", shader_file_extensions)
