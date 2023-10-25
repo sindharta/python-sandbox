@@ -209,13 +209,15 @@ class ShaderKeyword:
     def to_usage_list_summary(self, start_col, source_url_root):
         ret = []
 
+        usage_start_col = start_col + 1
+
         # Declarations
         for j, pragma_type in enumerate(self.declarations):
             cur_dict = self.declarations[pragma_type]
-            ret.extend(self.__create_file_dictionary_summary(cur_dict, start_col, "Decl.", source_url_root))
+            ret.extend(self.__create_file_dictionary_summary(cur_dict, usage_start_col, "Decl.", source_url_root))
 
-        ret.extend(self.__create_file_dictionary_summary(self.shader_usages, start_col, "Sh Usages", source_url_root))
-        ret.extend(self.__create_file_dictionary_summary(self.cs_usages, start_col, "C# Usages", source_url_root))
+        ret.extend(self.__create_file_dictionary_summary(self.shader_usages, usage_start_col, "Sh Usages", source_url_root))
+        ret.extend(self.__create_file_dictionary_summary(self.cs_usages, usage_start_col, "C# Usages", source_url_root))
 
 
         return ret
