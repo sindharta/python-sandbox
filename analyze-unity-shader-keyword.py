@@ -49,11 +49,18 @@ def write_to_csv(outputFileName, dataList, header_rows = []):
 
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-# includeFileExtensions: can contain multiple extensions, ex: "shader,hlsl"
+# input_dir: can be a string or a list of strings
+# include_file_extensions: can contain multiple extensions, ex: "shader,hlsl"
+# An example of the called grep:
+#   grep -Hrn DEBUG_DISPLAY <package_path>/com.unity.render-pipelines.universal@15.0.6/Shaders/2D <package_path>/com.unity.render-pipelines.core@15.0.6 --include=*.{shader,hlsl,cginc,cg}
+
 def run_grep(input_dir, pattern, include_file_extensions):
 
     # -Hrn with line numbers
-    proc = subprocess.run(["grep", "-Hrn", pattern, input_dir, "--include=*.{" + include_file_extensions + "}"], capture_output=True, text=True)
+    if type(input_dir) == list:
+        proc = subprocess.run(["grep", "-Hrn", pattern, *input_dir, "--include=*.{" + include_file_extensions + "}"], capture_output=True, text=True)
+    else:
+        proc = subprocess.run(["grep", "-Hrn", pattern, input_dir, "--include=*.{" + include_file_extensions + "}"], capture_output=True, text=True)
 
     grep_result = proc.stdout
     if (grep_result):
@@ -72,10 +79,22 @@ def read_file_all_lines(filePath):
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # file_path: ex: <input_dir>/Shaders/2D/Light2D.shader:20:
-# returns (path, line:number, remaining)
+# returns (relative path, line:number, remaining)
 def split_path_and_line(input_dir, path_and_line):
-    tokens = path_and_line.replace(input_dir,"")[1:].split(':') # use local_path relative to input_dir
-    return (tokens[0], int(tokens[1]), " ".join(tokens[2:]))
+
+    common_path = input_dir
+    find_rel_path = not path_and_line.startswith(input_dir)
+    if find_rel_path:
+        common_path = os.path.commonpath([input_dir, path_and_line]).replace("\\","/")
+
+    tokens = path_and_line.replace(common_path,"")[1:].split(':') # use local_path relative to input_dir
+    rel_path = tokens[0]
+
+    #tokens[0] is not located under input_dir. Find its relative path
+    if (find_rel_path):
+        rel_path = os.path.relpath(common_path + "/" + tokens[0], input_dir).replace("\\","/")
+
+    return (rel_path, int(tokens[1]), " ".join(tokens[2:]))
 
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -209,10 +228,12 @@ shader_file_extensions = "shader,hlsl,cg,cginc"
 
 parser = ArgumentParser()
 
-parser.add_argument('--directory', '-d', required=True, help='The directory of the shader files')
+parser.add_argument('--directory', '-d', required=True, help='<Required> The directory of the shader files')
 parser.add_argument('--output', '-o',required=False, default="shader.csv", help='The output file (default: shader.csv)')
 parser.add_argument('--source-url-root', '-r',required=False, default="", help='The URL root of the source code (default: "")')
 parser.add_argument('--num-surrounding-usage-lines', '-s',required=False, default=2, help='The number of surrounding usage lines (default: 2)')
+parser.add_argument('--add-usage-directory','-u', nargs='+', required=False, help='Additional usage directories')
+
 
 args = parser.parse_args()
 
@@ -229,6 +250,13 @@ if not os.path.isdir(input_dir):
 if isError:
     exit()
 
+additional_usage_dirs = []
+for dir in args.add_usage_directory:
+    if not os.path.isdir(dir):
+        print(f"Invalid additional usage dir: {dir}")
+        continue
+
+    additional_usage_dirs.append(dir)
 
 
 lines = run_grep(input_dir, "'#pragma\smulti_compile\|#pragma\sshader_feature'", shader_file_extensions)
@@ -304,8 +332,10 @@ for declaration_line_index, line in enumerate(lines):
         temp_contents = []
 
         #shader
-        shader_usage_lines = run_grep(input_dir, keyword, shader_file_extensions)
+        shader_usage_lines = run_grep([input_dir, *additional_usage_dirs], keyword, shader_file_extensions)
         for usage_line in shader_usage_lines:
+
+            print(usage_line)
             if "#pragma" in usage_line:
                 continue
 
@@ -323,7 +353,7 @@ for declaration_line_index, line in enumerate(lines):
             cur_shader_keyword.add_shader_usage(rel_usage_path, usage_line_number, temp_contents[start_line_no: end_line_no])
 
         #cs
-        cs_usage_lines = run_grep(input_dir, keyword, "cs")
+        cs_usage_lines = run_grep([input_dir, *additional_usage_dirs], keyword, "cs")
         for usage_line in cs_usage_lines:
             usage_tokens = usage_line.rsplit(',', 1)
             (rel_usage_path, usage_line_number, rem_token_0) = split_path_and_line(input_dir, usage_tokens[0])
