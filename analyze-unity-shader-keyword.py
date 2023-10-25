@@ -205,6 +205,21 @@ class ShaderKeyword:
 
         return ret
 
+
+    def to_usage_list_summary(self, start_col, source_url_root):
+        ret = []
+
+        # Declarations
+        for j, pragma_type in enumerate(self.declarations):
+            cur_dict = self.declarations[pragma_type]
+            ret.extend(self.__create_file_dictionary_summary(cur_dict, start_col, "Decl.", source_url_root))
+
+        ret.extend(self.__create_file_dictionary_summary(self.shader_usages, start_col, "Sh Usages", source_url_root))
+        ret.extend(self.__create_file_dictionary_summary(self.cs_usages, start_col, "C# Usages", source_url_root))
+
+
+        return ret
+
     def __create_usage_list(self, dictionary, start_col, source_url_root, file_path):
         ret = []
         for (usage_line, line_contents) in dictionary:
@@ -217,6 +232,24 @@ class ShaderKeyword:
 
             ret.append(l)
         return ret
+
+    def __create_file_dictionary_summary(self, dic, start_col, start_col_content, source_url_root):
+
+        ret = []
+        
+        row = self.__create_empty_string_list(start_col)
+        usages_type_item = start_col_content
+
+        for j, file_path in enumerate(dic):
+            row[start_col] = usages_type_item
+            row[start_col + 1] = file_path
+            row[start_col + 2] = f"{source_url_root}/{file_path}"
+            ret.append(row)
+            usages_type_item = ""
+
+        return ret
+
+
 
     def __create_empty_string_list(self, num_empty_elements):
         return [""] * (num_empty_elements + 6)
@@ -376,7 +409,12 @@ for keyword in sorted(keywords_dict.keys()):
     if len(validation_message) > 0:
         csv_list.append(["", "Error", validation_message])
         error_keyword_list.append(keyword)
-    csv_list.extend(keywords_dict[keyword].to_string_list(start_col=1, source_url_root= args.source_url_root))
+
+    #csv_list.extend(keywords_dict[keyword].to_string_list(start_col=1, source_url_root= args.source_url_root))
+
+    csv_list.extend(keywords_dict[keyword].to_usage_list_summary(start_col=1, source_url_root= args.source_url_root))
+
+
 
 # combine errors
 if len(error_keyword_list) > 0:
