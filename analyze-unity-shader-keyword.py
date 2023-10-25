@@ -399,29 +399,37 @@ for declaration_line_index, line in enumerate(lines):
 
 # convert to list
 csv_list = []
-error_keyword_list = []
-for keyword in sorted(keywords_dict.keys()):
+error_keywords = set()
+sorted_keywords = sorted(keywords_dict.keys())
+for keyword in sorted_keywords:
     csv_list.append([keyword])
 
     validation_message = keywords_dict[keyword].validate()
     if len(validation_message) > 0:
         csv_list.append(["", "Error", validation_message])
-        error_keyword_list.append(keyword)
+        error_keywords.add(keyword)
 
-    #csv_list.extend(keywords_dict[keyword].to_string_list(start_col=1, source_url_root= args.source_url_root))
-
-    csv_list.extend(keywords_dict[keyword].to_usage_list_summary(start_col=1, source_url_root= args.source_url_root))
-
-
+    csv_list.extend(keywords_dict[keyword].to_string_list(start_col=1, source_url_root= args.source_url_root))
 
 # combine errors
-if len(error_keyword_list) > 0:
+if len(error_keywords) > 0:
     csv_list.append([])
     csv_list.append([])
     csv_list.append([])
     csv_list.append(["Error Keywords"])
-    for keyword in error_keyword_list:
+    for keyword in error_keywords:
         csv_list.append(["", keyword])
+
+# add summary at the end
+csv_list.append([])
+csv_list.append([])
+csv_list.append([])
+csv_list.append(["Usage Summary"])
+for keyword in sorted_keywords:
+    if keyword in error_keywords:
+        continue
+
+    csv_list.extend(keywords_dict[keyword].to_usage_list_summary(start_col=1, source_url_root= args.source_url_root))
 
 
 header_row = [[ f"Total Keywords: {len(keywords_dict)}"], ["Keyword","","Type","FilePath", "LineNo", "LineContents", "URL"]]
