@@ -338,14 +338,25 @@ for declaration_line_index, line in enumerate(lines):
 
 # convert to list
 csv_list = []
+error_keyword_list = []
 for keyword in sorted(keywords_dict.keys()):
     csv_list.append([keyword])
 
     validation_message = keywords_dict[keyword].validate()
     if len(validation_message) > 0:
         csv_list.append(["", "Error", validation_message])
-
+        error_keyword_list.append(keyword)
     csv_list.extend(keywords_dict[keyword].to_string_list(start_col=1, source_url_root= args.source_url_root))
+
+# combine errors
+if len(error_keyword_list) > 0:
+    csv_list.append([])
+    csv_list.append([])
+    csv_list.append([])
+    csv_list.append(["Error Keywords"])
+    for keyword in error_keyword_list:
+        csv_list.append(["", keyword])
+
 
 header_row = [[ f"Total Keywords: {len(keywords_dict)}"], ["Keyword","","Type","FilePath", "LineNo", "LineContents", "URL"]]
 write_to_csv(args.output, csv_list, header_row)
