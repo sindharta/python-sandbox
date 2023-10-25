@@ -429,6 +429,7 @@ for keyword in sorted_keywords:
     if keyword in error_keywords:
         continue
 
+    csv_list.append([keyword])
     csv_list.extend(keywords_dict[keyword].to_usage_list_summary(start_col=1, source_url_root= args.source_url_root))
 
 
