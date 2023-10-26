@@ -205,6 +205,23 @@ class ShaderKeyword:
 
         return ret
 
+
+    def to_usage_list_summary(self, start_col, source_url_root):
+        ret = []
+
+        usage_start_col = start_col + 1
+
+        # Declarations
+        for j, pragma_type in enumerate(self.declarations):
+            cur_dict = self.declarations[pragma_type]
+            ret.extend(self.__create_file_dictionary_summary(cur_dict, usage_start_col, "Decl.", source_url_root))
+
+        ret.extend(self.__create_file_dictionary_summary(self.shader_usages, usage_start_col, "Sh Usages", source_url_root))
+        ret.extend(self.__create_file_dictionary_summary(self.cs_usages, usage_start_col, "C# Usages", source_url_root))
+
+
+        return ret
+
     def __create_usage_list(self, dictionary, start_col, source_url_root, file_path):
         ret = []
         for (usage_line, line_contents) in dictionary:
@@ -217,6 +234,20 @@ class ShaderKeyword:
 
             ret.append(l)
         return ret
+
+    def __create_file_dictionary_summary(self, dic, start_col, start_col_content, source_url_root):
+        ret = []
+        
+        usage_type_item = start_col_content
+        empty_cols = [""] * (start_col - 1) if start_col > 0 else []
+
+        for j, file_path in enumerate(dic):
+            ret.append([*empty_cols, usage_type_item, file_path,f"{source_url_root}/{file_path}"])
+            usage_type_item = ""
+
+        return ret
+
+
 
     def __create_empty_string_list(self, num_empty_elements):
         return [""] * (num_empty_elements + 6)
@@ -368,24 +399,38 @@ for declaration_line_index, line in enumerate(lines):
 
 # convert to list
 csv_list = []
-error_keyword_list = []
-for keyword in sorted(keywords_dict.keys()):
+error_keywords = set()
+sorted_keywords = sorted(keywords_dict.keys())
+for keyword in sorted_keywords:
     csv_list.append([keyword])
 
     validation_message = keywords_dict[keyword].validate()
     if len(validation_message) > 0:
         csv_list.append(["", "Error", validation_message])
-        error_keyword_list.append(keyword)
+        error_keywords.add(keyword)
+
     csv_list.extend(keywords_dict[keyword].to_string_list(start_col=1, source_url_root= args.source_url_root))
 
 # combine errors
-if len(error_keyword_list) > 0:
+if len(error_keywords) > 0:
     csv_list.append([])
     csv_list.append([])
     csv_list.append([])
     csv_list.append(["Error Keywords"])
-    for keyword in error_keyword_list:
+    for keyword in error_keywords:
         csv_list.append(["", keyword])
+
+# add summary at the end
+csv_list.append([])
+csv_list.append([])
+csv_list.append([])
+csv_list.append(["Usage Summary"])
+for keyword in sorted_keywords:
+    if keyword in error_keywords:
+        continue
+
+    csv_list.append([keyword])
+    csv_list.extend(keywords_dict[keyword].to_usage_list_summary(start_col=1, source_url_root= args.source_url_root))
 
 
 header_row = [[ f"Total Keywords: {len(keywords_dict)}"], ["Keyword","","Type","FilePath", "LineNo", "LineContents", "URL"]]
