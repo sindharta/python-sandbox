@@ -306,7 +306,13 @@ keywords_dict = {}
 keywords_grepped = set()
 
 for declaration_line_index, line in enumerate(lines):
-    tokens = line.split()
+
+    grep_tokens = line.split()
+    (shader_file_path, declaration_line_number, rem_token_0) = split_path_and_line(input_dir, grep_tokens[0])
+
+    usage_line_content = (rem_token_0 + " " + " ".join(grep_tokens[1:])).strip()
+
+    tokens = usage_line_content.split()
 
     pragma_token = tokens[1]
     if pragma_token.startswith('//'):
@@ -323,8 +329,6 @@ for declaration_line_index, line in enumerate(lines):
     keyword_start_index = 3
     keyword_tokens_in_line = " ".join(tokens[keyword_start_index:])
     shader_file_path_tokens = tokens[0].replace(input_dir,"")[1:].split(':') # use local_path relative to input_dir
-
-    (shader_file_path, declaration_line_number, rem_token_0) = split_path_and_line(input_dir, tokens[0])
 
     # Empty strings are false
     if rem_token_0:
@@ -347,7 +351,6 @@ for declaration_line_index, line in enumerate(lines):
         cur_shader_keyword = keywords_dict[keyword]
 
         # Declarations
-        usage_line_content = rem_token_0 + " " + " ".join(tokens[1:])
         cur_shader_keyword.add_declaration(pragma_type, shader_file_path,declaration_line_number, usage_line_content)
 
         #break early for debugging
