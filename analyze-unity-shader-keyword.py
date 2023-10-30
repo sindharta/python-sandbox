@@ -314,11 +314,11 @@ for declaration_line_index, line in enumerate(lines):
 
     tokens = usage_line_content.split()
 
-    pragma_token = tokens[1]
+    pragma_token = tokens[0]
     if pragma_token.startswith('//'):
         continue
 
-    pragma_type = tokens[2]
+    pragma_type = tokens[1]
 
     if is_special_pragma_type(pragma_type):
         special_pragma_types.add(pragma_type)
@@ -326,9 +326,8 @@ for declaration_line_index, line in enumerate(lines):
 
     numTokens = len(tokens)
 
-    keyword_start_index = 3
+    keyword_start_index = 2
     keyword_tokens_in_line = " ".join(tokens[keyword_start_index:])
-    shader_file_path_tokens = tokens[0].replace(input_dir,"")[1:].split(':') # use local_path relative to input_dir
 
     # Empty strings are false
     if rem_token_0:
