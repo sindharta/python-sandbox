@@ -417,7 +417,7 @@ if len(error_keywords) > 0:
     csv_list.append([])
     csv_list.append([])
     csv_list.append(["Error Keywords"])
-    for keyword in error_keywords:
+    for keyword in sorted(error_keywords):
         csv_list.append(["", keyword])
 
 # add summary at the end
