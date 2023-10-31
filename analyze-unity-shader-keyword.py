@@ -364,7 +364,6 @@ for declaration_line_index, line in enumerate(lines):
         shader_usage_lines = run_grep([input_dir, *additional_usage_dirs], keyword, shader_file_extensions)
         for usage_line in shader_usage_lines:
 
-            print(usage_line)
             if "#pragma" in usage_line:
                 continue
 
