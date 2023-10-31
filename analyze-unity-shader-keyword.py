@@ -245,7 +245,8 @@ class ShaderKeyword:
         empty_cols = [""] * (start_col - 1) if start_col > 0 else []
 
         for j, file_path in enumerate(dic):
-            ret.append([*empty_cols, usage_type_item, file_path,f"{source_url_root}/{file_path}"])
+            rel_url = re.sub('@\d+\.\d+\.\d+', '', file_path)  # ../com.unity.render-pipelines.core@15.0.6/ -> ../com.unity.render-pipelines.core/
+            ret.append([*empty_cols, usage_type_item, file_path,f"{source_url_root}/{rel_url}"])
             usage_type_item = ""
 
         return ret
