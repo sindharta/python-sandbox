@@ -329,11 +329,6 @@ for declaration_line_index, line in enumerate(lines):
     keyword_start_index = 2
     keyword_tokens_in_line = " ".join(tokens[keyword_start_index:])
 
-    # Empty strings are false
-    if rem_token_0:
-        print("Error: this program needs to be upgraded to handle the remaining of token 0: ", rem_token_0)
-        exit()
-
     # loop all keywords in this declaration line
     for index, keyword in enumerate(tokens[keyword_start_index:], keyword_start_index):
         if keyword == "_" or keyword == "__":
