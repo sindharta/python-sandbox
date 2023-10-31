@@ -306,13 +306,19 @@ keywords_dict = {}
 keywords_grepped = set()
 
 for declaration_line_index, line in enumerate(lines):
-    tokens = line.split()
 
-    pragma_token = tokens[1]
+    grep_tokens = line.split()
+    (shader_file_path, declaration_line_number, rem_token_0) = split_path_and_line(input_dir, grep_tokens[0])
+
+    usage_line_content = (rem_token_0 + " " + " ".join(grep_tokens[1:])).strip()
+
+    tokens = usage_line_content.split()
+
+    pragma_token = tokens[0]
     if pragma_token.startswith('//'):
         continue
 
-    pragma_type = tokens[2]
+    pragma_type = tokens[1]
 
     if is_special_pragma_type(pragma_type):
         special_pragma_types.add(pragma_type)
@@ -320,16 +326,8 @@ for declaration_line_index, line in enumerate(lines):
 
     numTokens = len(tokens)
 
-    keyword_start_index = 3
+    keyword_start_index = 2
     keyword_tokens_in_line = " ".join(tokens[keyword_start_index:])
-    shader_file_path_tokens = tokens[0].replace(input_dir,"")[1:].split(':') # use local_path relative to input_dir
-
-    (shader_file_path, declaration_line_number, rem_token_0) = split_path_and_line(input_dir, tokens[0])
-
-    # Empty strings are false
-    if rem_token_0:
-        print("Error: this program needs to be upgraded to handle the remaining of token 0: ", rem_token_0)
-        exit()
 
     # loop all keywords in this declaration line
     for index, keyword in enumerate(tokens[keyword_start_index:], keyword_start_index):
@@ -347,7 +345,6 @@ for declaration_line_index, line in enumerate(lines):
         cur_shader_keyword = keywords_dict[keyword]
 
         # Declarations
-        usage_line_content = rem_token_0 + " " + " ".join(tokens[1:])
         cur_shader_keyword.add_declaration(pragma_type, shader_file_path,declaration_line_number, usage_line_content)
 
         #break early for debugging
