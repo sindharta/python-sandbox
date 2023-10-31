@@ -5,6 +5,7 @@ from argparse import ArgumentParser
 import csv
 import os
 import subprocess
+import re
 
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -229,8 +230,10 @@ class ShaderKeyword:
 
             l[start_col] = usage_line
             l[start_col + 1] = "".join(line_contents) # convert a list to a multiline string
+            
             if len(source_url_root) > 0:
-                l[start_col + 2] = f"{source_url_root}/{file_path}#L{usage_line}"
+                rel_url = re.sub('@\d+\.\d+\.\d+', '', file_path) #../com.unity.render-pipelines.core@15.0.6/ -> ../com.unity.render-pipelines.core/
+                l[start_col + 2] = f"{source_url_root}/{rel_url}#L{usage_line}"
 
             ret.append(l)
         return ret
