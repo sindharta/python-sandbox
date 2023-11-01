@@ -232,11 +232,12 @@ class ShaderKeyword:
         for (line_no, line_contents) in dictionary:
             l = self.__create_empty_string_list(start_col)
 
-            l[start_col] = line_no
             l[start_col + 1] = "".join(line_contents) # convert a list to a multiline string
             
             if len(source_url_root) > 0:
-                l[start_col + 2] = self.__convert_path_to_hyperlink(source_url_root, file_path, line_no)
+                l[start_col] = self.__convert_path_to_hyperlink(line_no, source_url_root, file_path, line_no)
+            else:
+                l[start_col] = line_no
 
             ret.append(l)
         return ret
@@ -248,12 +249,12 @@ class ShaderKeyword:
         empty_cols = [""] * (start_col - 1) if start_col > 0 else []
 
         for j, file_path in enumerate(dic):
-            ret.append([*empty_cols, usage_type_item, file_path,self.__convert_path_to_hyperlink(source_url_root, file_path)])
+            ret.append([*empty_cols, usage_type_item, self.__convert_path_to_hyperlink(file_path, source_url_root, file_path)])
             usage_type_item = ""
 
         return ret
 
-    def __convert_path_to_hyperlink(self, url_root, path, line_no = -1):
+    def __convert_path_to_hyperlink(self, link_text, url_root, path, line_no = -1):
 
         rel_url = re.sub('@\d+\.\d+\.\d+', '', path)  # ../com.unity.render-pipelines.core@15.0.6/ -> ../com.unity.render-pipelines.core/
         ret = f"{url_root}/{rel_url}"
@@ -264,7 +265,7 @@ class ShaderKeyword:
 
         # put inside hyperlink formula
         ret = ret.replace('"','""')
-        ret = f'=HYPERLINK("{ret}","link")'
+        ret = f'=HYPERLINK("{ret}","{link_text}")'
 
         return ret
 
