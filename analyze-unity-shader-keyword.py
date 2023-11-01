@@ -257,8 +257,14 @@ class ShaderKeyword:
 
         rel_url = re.sub('@\d+\.\d+\.\d+', '', path)  # ../com.unity.render-pipelines.core@15.0.6/ -> ../com.unity.render-pipelines.core/
         ret = f"{url_root}/{rel_url}"
+
+
         if (line_no >=0):
             ret+= f"#L{line_no}"
+
+        # put inside hyperlink formula
+        ret = ret.replace('"','""')
+        ret = f'=HYPERLINK("{ret}","link")'
 
         return ret
 
