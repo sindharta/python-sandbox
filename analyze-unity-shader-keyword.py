@@ -5,6 +5,7 @@ from argparse import ArgumentParser
 import csv
 import os
 import subprocess
+import re
 
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -229,8 +230,10 @@ class ShaderKeyword:
 
             l[start_col] = usage_line
             l[start_col + 1] = "".join(line_contents) # convert a list to a multiline string
+            
             if len(source_url_root) > 0:
-                l[start_col + 2] = f"{source_url_root}/{file_path}#L{usage_line}"
+                rel_url = re.sub('@\d+\.\d+\.\d+', '', file_path) #../com.unity.render-pipelines.core@15.0.6/ -> ../com.unity.render-pipelines.core/
+                l[start_col + 2] = f"{source_url_root}/{rel_url}#L{usage_line}"
 
             ret.append(l)
         return ret
@@ -242,7 +245,8 @@ class ShaderKeyword:
         empty_cols = [""] * (start_col - 1) if start_col > 0 else []
 
         for j, file_path in enumerate(dic):
-            ret.append([*empty_cols, usage_type_item, file_path,f"{source_url_root}/{file_path}"])
+            rel_url = re.sub('@\d+\.\d+\.\d+', '', file_path)  # ../com.unity.render-pipelines.core@15.0.6/ -> ../com.unity.render-pipelines.core/
+            ret.append([*empty_cols, usage_type_item, file_path,f"{source_url_root}/{rel_url}"])
             usage_type_item = ""
 
         return ret
@@ -414,7 +418,7 @@ if len(error_keywords) > 0:
     csv_list.append([])
     csv_list.append([])
     csv_list.append(["Error Keywords"])
-    for keyword in error_keywords:
+    for keyword in sorted(error_keywords):
         csv_list.append(["", keyword])
 
 # add summary at the end
