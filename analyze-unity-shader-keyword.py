@@ -236,7 +236,7 @@ class ShaderKeyword:
             l[start_col + 1] = "".join(line_contents) # convert a list to a multiline string
             
             if len(source_url_root) > 0:
-                l[start_col + 2] = self.__convert_path_to_hyperlink(file_path, line_no)
+                l[start_col + 2] = self.__convert_path_to_hyperlink(source_url_root, file_path, line_no)
 
             ret.append(l)
         return ret
@@ -248,15 +248,15 @@ class ShaderKeyword:
         empty_cols = [""] * (start_col - 1) if start_col > 0 else []
 
         for j, file_path in enumerate(dic):
-            ret.append([*empty_cols, usage_type_item, file_path,self.__convert_path_to_hyperlink(file_path)])
+            ret.append([*empty_cols, usage_type_item, file_path,self.__convert_path_to_hyperlink(source_url_root, file_path)])
             usage_type_item = ""
 
         return ret
 
-    def __convert_path_to_hyperlink(self, path, line_no = -1):
+    def __convert_path_to_hyperlink(self, url_root, path, line_no = -1):
 
         rel_url = re.sub('@\d+\.\d+\.\d+', '', path)  # ../com.unity.render-pipelines.core@15.0.6/ -> ../com.unity.render-pipelines.core/
-        ret = f"{source_url_root}/{rel_url}"
+        ret = f"{url_root}/{rel_url}"
         if (line_no >=0):
             ret+= f"#L{line_no}"
 
