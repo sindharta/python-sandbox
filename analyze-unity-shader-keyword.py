@@ -450,7 +450,7 @@ for keyword in sorted_keywords:
     csv_list.extend(keywords_dict[keyword].to_usage_list_summary(start_col=1, source_url_root= args.source_url_root))
 
 
-header_row = [[f"Keywords (Total: {len(keywords_dict)})","","Type","Path", "LineNo", "LineContents", "URL"]]
+header_row = [[f"Keywords (Total: {len(keywords_dict)})","","Type","Path", "LineNo", "LineContents"]]
 write_to_csv(args.output, csv_list, header_row)
 
 # print
