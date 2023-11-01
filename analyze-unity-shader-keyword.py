@@ -229,15 +229,15 @@ class ShaderKeyword:
 
     def __create_usage_list(self, dictionary, start_col, source_url_root, file_path):
         ret = []
-        for (usage_line, line_contents) in dictionary:
+        for (line_no, line_contents) in dictionary:
             l = self.__create_empty_string_list(start_col)
 
-            l[start_col] = usage_line
             l[start_col + 1] = "".join(line_contents) # convert a list to a multiline string
             
             if len(source_url_root) > 0:
-                rel_url = re.sub('@\d+\.\d+\.\d+', '', file_path) #../com.unity.render-pipelines.core@15.0.6/ -> ../com.unity.render-pipelines.core/
-                l[start_col + 2] = f"{source_url_root}/{rel_url}#L{usage_line}"
+                l[start_col] = self.__convert_path_to_hyperlink(line_no, source_url_root, file_path, line_no)
+            else:
+                l[start_col] = line_no
 
             ret.append(l)
         return ret
@@ -249,13 +249,25 @@ class ShaderKeyword:
         empty_cols = [""] * (start_col - 1) if start_col > 0 else []
 
         for j, file_path in enumerate(dic):
-            rel_url = re.sub('@\d+\.\d+\.\d+', '', file_path)  # ../com.unity.render-pipelines.core@15.0.6/ -> ../com.unity.render-pipelines.core/
-            ret.append([*empty_cols, usage_type_item, file_path,f"{source_url_root}/{rel_url}"])
+            ret.append([*empty_cols, usage_type_item, self.__convert_path_to_hyperlink(file_path, source_url_root, file_path)])
             usage_type_item = ""
 
         return ret
 
+    def __convert_path_to_hyperlink(self, link_text, url_root, path, line_no = -1):
 
+        rel_url = re.sub('@\d+\.\d+\.\d+', '', path)  # ../com.unity.render-pipelines.core@15.0.6/ -> ../com.unity.render-pipelines.core/
+        ret = f"{url_root}/{rel_url}"
+
+
+        if (line_no >=0):
+            ret+= f"#L{line_no}"
+
+        # put inside hyperlink formula
+        ret = ret.replace('"','""')
+        ret = f'=HYPERLINK("{ret}","{link_text}")'
+
+        return ret
 
     def __create_empty_string_list(self, num_empty_elements):
         return [""] * (num_empty_elements + 6)
@@ -438,7 +450,7 @@ for keyword in sorted_keywords:
     csv_list.extend(keywords_dict[keyword].to_usage_list_summary(start_col=1, source_url_root= args.source_url_root))
 
 
-header_row = [[f"Keywords (Total: {len(keywords_dict)})","","Type","FilePath", "LineNo", "LineContents", "URL"]]
+header_row = [[f"Keywords (Total: {len(keywords_dict)})","","Type","Path", "LineNo", "LineContents", "URL"]]
 write_to_csv(args.output, csv_list, header_row)
 
 # print
