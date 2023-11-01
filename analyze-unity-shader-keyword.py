@@ -55,13 +55,17 @@ def write_to_csv(outputFileName, dataList, header_rows = []):
 # An example of the called grep:
 #   grep -Hrn DEBUG_DISPLAY <package_path>/com.unity.render-pipelines.universal@15.0.6/Shaders/2D <package_path>/com.unity.render-pipelines.core@15.0.6 --include=*.{shader,hlsl,cginc,cg}
 
-def run_grep(input_dir, pattern, include_file_extensions):
+def run_grep(input_dir, pattern, include_file_extensions, is_exact_match = False):
+
+    grep_options = "-Hrn"
+    if is_exact_match:
+        grep_options += "w"
 
     # -Hrn with line numbers
     if type(input_dir) == list:
-        proc = subprocess.run(["grep", "-Hrn", pattern, *input_dir, "--include=*.{" + include_file_extensions + "}"], capture_output=True, text=True)
+        proc = subprocess.run(["grep", grep_options, pattern, *input_dir, "--include=*.{" + include_file_extensions + "}"], capture_output=True, text=True)
     else:
-        proc = subprocess.run(["grep", "-Hrn", pattern, input_dir, "--include=*.{" + include_file_extensions + "}"], capture_output=True, text=True)
+        proc = subprocess.run(["grep", grep_options, pattern, input_dir, "--include=*.{" + include_file_extensions + "}"], capture_output=True, text=True)
 
     grep_result = proc.stdout
     if (grep_result):
@@ -365,7 +369,7 @@ for declaration_line_index, line in enumerate(lines):
         temp_contents = []
 
         #shader
-        shader_usage_lines = run_grep([input_dir, *additional_usage_dirs], keyword, shader_file_extensions)
+        shader_usage_lines = run_grep([input_dir, *additional_usage_dirs], keyword, shader_file_extensions, True)
         for usage_line in shader_usage_lines:
 
             if "#pragma" in usage_line:
@@ -385,7 +389,7 @@ for declaration_line_index, line in enumerate(lines):
             cur_shader_keyword.add_shader_usage(rel_usage_path, usage_line_number, temp_contents[start_line_no: end_line_no])
 
         #cs
-        cs_usage_lines = run_grep([input_dir, *additional_usage_dirs], keyword, "cs")
+        cs_usage_lines = run_grep([input_dir, *additional_usage_dirs], keyword, "cs", True)
         for usage_line in cs_usage_lines:
             usage_tokens = usage_line.rsplit(',', 1)
             (rel_usage_path, usage_line_number, rem_token_0) = split_path_and_line(input_dir, usage_tokens[0])
