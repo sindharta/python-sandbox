@@ -275,7 +275,7 @@ class ShaderKeyword:
 
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-shader_file_extensions = "shader,hlsl,cg,cginc"
+shader_file_extensions = "shader,hlsl,cg,cginc,template"
 
 parser = ArgumentParser()
 
