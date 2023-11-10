@@ -138,32 +138,6 @@ class ShaderKeyword:
             cur_shader_keyword.cs_usages[shader_file_path] = list()
         cur_shader_keyword.cs_usages[shader_file_path].append((line_number, line_contents))
 
-    def validate(self):
-
-        # Declarations
-        if len(self.declarations) <= 0:
-            return f"No declarations for keyword: {self.keyword}"
-
-        for j, pragma_type in enumerate(self.declarations):
-            cur_dict = self.declarations[pragma_type]
-
-            if len(cur_dict) <= 0:
-                return f"Declarations error for keyword: {self.keyword}. Pragma is empty: {pragma_type}"
-
-            for k, shader_file_path in enumerate(cur_dict):
-                if (len(cur_dict[shader_file_path])) <= 0:
-                    return f"Declarations error for keyword: {self.keyword}. No usages in shader file: {shader_file_path}"
-
-        # Usages
-        if len(self.shader_usages) <=0:
-            return f"No usages for keyword: {self.keyword}"
-
-        for j, shader_file_path in enumerate(self.shader_usages):
-
-            if (len(self.shader_usages[shader_file_path])) <= 0:
-                return f"Usages error for keyword: {self.keyword}. No usages in shader file: {shader_file_path}"
-
-        return ""
 
     def to_string_list(self, start_col, source_url_root):
         ret = []
@@ -316,11 +290,8 @@ lines = run_grep(input_dir, "'#pragma\smulti_compile\|#pragma\sshader_feature'",
 special_pragma_types = set()
 
 # Declarations:
-# _SHADOWS_SOFT -> multi_compile -> A.hlsl -> [(line 10, actual_line), (line 20, actual_line)]
-#                                   B.hlsl -> [(line 90, actual_line), (line 80, actual_line)]
-# Usage:
-# _SHADOWS_SOFT -> A.hlsl -> [(line 10, actual_line), (line 20, actual_line)]
-#                  B.hlsl -> [(line 90, actual_line), (line 80, actual_line)]
+# multi_compile_fog -> A.hlsl -> [(line 10, actual_line), (line 20, actual_line)]
+#                      B.hlsl -> [(line 90, actual_line), (line 80, actual_line)]
 
 keywords_dict = {}
 keywords_grepped = set()
