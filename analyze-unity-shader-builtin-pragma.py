@@ -113,9 +113,7 @@ def split_path_and_line(input_dir, path_and_line):
 class ShaderPragmaShortcut:
     def __init__(self, kw):
         self.keyword = kw
-        self.declarations = {}
         self.usages = {}
-        self.cs_usages = {}
 
     def add_usage(self, shader_file_path, line_number, line_contents):
         if shader_file_path not in self.usages:
@@ -125,23 +123,6 @@ class ShaderPragmaShortcut:
 
     def to_string_list(self, start_col, source_url_root):
         ret = []
-
-        # Declarations
-        usages_type_item = "Decl."
-        for j, pragma_type in enumerate(self.declarations):
-            cur_dict = self.declarations[pragma_type]
-            pragma_type_item = pragma_type
-
-            for k, shader_file_path in enumerate(cur_dict):
-                shader_file_path_item = shader_file_path
-
-                usage_list = self.__create_usage_list(cur_dict[shader_file_path], start_col + 3, source_url_root, shader_file_path)
-                for usage in usage_list:
-                    usage[start_col] = usages_type_item
-                    usage[start_col+1] = pragma_type_item
-                    usage[start_col+2] = shader_file_path_item
-                    ret.append(usage)
-                    usages_type_item = pragma_type_item = shader_file_path_item = ""
 
         # Shader Usages
         usages_type_item = "Sh Usages"
@@ -154,17 +135,6 @@ class ShaderPragmaShortcut:
                 usage[start_col + 2] = shader_file_path_item
                 ret.append(usage)
                 usages_type_item = shader_file_path_item = ""
-
-        usages_type_item = "C# Usages"
-        for j, cs_file_path in enumerate(self.cs_usages):
-            cs_file_path_item = cs_file_path
-
-            usage_list = self.__create_usage_list(self.cs_usages[cs_file_path], start_col + 3, source_url_root, cs_file_path)
-            for usage in usage_list:
-                usage[start_col] = usages_type_item
-                usage[start_col + 2] = cs_file_path_item
-                ret.append(usage)
-                usages_type_item = cs_file_path_item = ""
 
         return ret
 
