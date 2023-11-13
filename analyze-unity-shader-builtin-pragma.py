@@ -110,7 +110,7 @@ def split_path_and_line(input_dir, path_and_line):
 # _SHADOWS_SOFT -> A.hlsl -> [(line 10, [line_contents] ), (line 20, [line_contents] )]
 #                  B.hlsl -> [(line 90, [line_contents] ), (line 80, [line_contents] )]
 
-class ShaderKeyword:
+class ShaderPragmaShortcut:
     def __init__(self, kw):
         self.keyword = kw
         self.declarations = {}
@@ -285,7 +285,7 @@ for declaration_line_index, line in enumerate(lines):
 
     #print(keyword, index, keyword_tokens_in_line)
     if not pragma_type in pragma_dict:
-        pragma_dict[pragma_type] = ShaderKeyword(pragma_type)
+        pragma_dict[pragma_type] = ShaderPragmaShortcut(pragma_type)
 
     cur_shader_keyword = pragma_dict[pragma_type]
 
