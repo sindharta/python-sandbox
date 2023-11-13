@@ -278,7 +278,7 @@ for pragma_type in sorted_keywords:
     csv_list.append([pragma_type])
     csv_list.extend(pragma_dict[pragma_type].to_string_list(start_col=1, source_url_root= args.source_url_root))
 
-header_row = [[f"Keywords (Total: {len(pragma_dict)})","","Type","Path", "LineNo", "LineContents"]]
+header_row = [[f"Keywords (Total: {len(pragma_dict)})","Path", "LineNo", "LineContents"]]
 write_to_csv(args.output, csv_list, header_row)
 
 # print
