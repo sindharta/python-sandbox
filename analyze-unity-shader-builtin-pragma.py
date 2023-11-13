@@ -152,17 +152,6 @@ class ShaderPragmaShortcut:
             ret.append(l)
         return ret
 
-    def __create_file_dictionary_summary(self, dic, start_col, start_col_content, source_url_root):
-        ret = []
-        
-        usage_type_item = start_col_content
-        empty_cols = [""] * (start_col - 1) if start_col > 0 else []
-
-        for j, file_path in enumerate(dic):
-            ret.append([*empty_cols, usage_type_item, self.__convert_path_to_hyperlink(file_path, source_url_root, file_path)])
-            usage_type_item = ""
-
-        return ret
 
     def __convert_path_to_hyperlink(self, link_text, url_root, path, line_no = -1):
 
