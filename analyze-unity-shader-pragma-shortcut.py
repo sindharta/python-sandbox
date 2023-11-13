@@ -101,6 +101,47 @@ def split_path_and_line(input_dir, path_and_line):
 
     return (rel_path, int(tokens[1]), " ".join(tokens[2:]))
 
+
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+shortcut_to_keywords_dict = {
+    
+    "multi_compile_fwdbase": [
+        "DIRECTIONAL", "LIGHTMAP_ON", "DIRLIGHTMAP_COMBINED",
+        "DYNAMICLIGHTMAP_ON", "SHADOWS_SCREEN", "SHADOWS_SHADOWMASK",
+        "LIGHTMAP_SHADOW_MIXING", "LIGHTPROBE_SH"
+    ],
+    "multi_compile_fwdbasealpha": [
+        "DIRECTIONAL", "LIGHTMAP_ON", "DIRLIGHTMAP_COMBINED",
+        "DYNAMICLIGHTMAP_ON", "LIGHTMAP_SHADOW_MIXING", "VERTEXLIGHT_ON",
+        "LIGHTPROBE_SH"
+    ],
+    "multi_compile_fwdadd": [
+        "POINT", "DIRECTIONAL", "SPOT", "POINT_COOKIE", "DIRECTIONAL_COOKIE"
+    ],
+    "multi_compile_fwdadd_fullshadows": [
+        "POINT", "DIRECTIONAL", "SPOT", "POINT_COOKIE", "DIRECTIONAL_COOKIE",
+        "SHADOWS_DEPTH", "SHADOWS_SCREEN", "SHADOWS_CUBE", "SHADOWS_SOFT",
+        "SHADOWS_SHADOWMASK", "LIGHTMAP_SHADOW_MIXING"
+    ],
+    "multi_compile_lightpass": [
+        "POINT", "DIRECTIONAL", "SPOT", "POINT_COOKIE", "DIRECTIONAL_COOKIE",
+        "SHADOWS_DEPTH", "SHADOWS_SCREEN", "SHADOWS_CUBE", "SHADOWS_SOFT",
+        "SHADOWS_SHADOWMASK", "LIGHTMAP_SHADOW_MIXING"
+    ],
+    "multi_compile_shadowcaster": ["SHADOWS_DEPTH", "SHADOWS_CUBE"],
+    "multi_compile_shadowcollector": [
+        "SHADOWS_SPLIT_SPHERES", "SHADOWS_SINGLE_CASCADE"
+    ],
+    "multi_compile_prepassfinal": [
+        "LIGHTMAP_ON", "DIRLIGHTMAP_COMBINED", "DYNAMICLIGHTMAP_ON",
+        "UNITY_HDR_ON", "SHADOWS_SHADOWMASK", "LIGHTPROBE_SH"
+    ],
+    "multi_compile_particles": ["SOFTPARTICLES_ON"],
+    "multi_compile_fog": ["FOG_LINEAR", "FOG_EXP", "FOG_EXP2"],
+    "multi_compile_instancing": ["INSTANCING_ON", "PROCEDURAL_ON"]
+}
+
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # Usage:
