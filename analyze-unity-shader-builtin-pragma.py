@@ -117,26 +117,10 @@ class ShaderKeyword:
         self.shader_usages = {}
         self.cs_usages = {}
 
-    def add_declaration(self, pragma_type, shader_file_path, line_number, line_contents):
-        # Declarations
-        # _SHADOWS_SOFT -> A.hlsl -> [(line 10, [line_contents] ), (line 20, [line_contents] )]
-        if pragma_type not in self.declarations:
-            self.declarations[pragma_type] = {}
-
-        if shader_file_path not in self.declarations[pragma_type]:
-            self.declarations[pragma_type][shader_file_path] = list()
-
-        self.declarations[pragma_type][shader_file_path].append((line_number, line_contents))
-
     def add_shader_usage(self, shader_file_path, line_number, line_contents):
         if shader_file_path not in self.shader_usages:
             cur_shader_keyword.shader_usages[shader_file_path] = list()
         cur_shader_keyword.shader_usages[shader_file_path].append((line_number, line_contents))
-
-    def add_cs_usage(self, shader_file_path, line_number, line_contents):
-        if shader_file_path not in self.cs_usages:
-            cur_shader_keyword.cs_usages[shader_file_path] = list()
-        cur_shader_keyword.cs_usages[shader_file_path].append((line_number, line_contents))
 
 
     def to_string_list(self, start_col, source_url_root):
@@ -184,22 +168,6 @@ class ShaderKeyword:
 
         return ret
 
-
-    def to_usage_list_summary(self, start_col, source_url_root):
-        ret = []
-
-        usage_start_col = start_col + 1
-
-        # Declarations
-        for j, pragma_type in enumerate(self.declarations):
-            cur_dict = self.declarations[pragma_type]
-            ret.extend(self.__create_file_dictionary_summary(cur_dict, usage_start_col, "Decl.", source_url_root))
-
-        ret.extend(self.__create_file_dictionary_summary(self.shader_usages, usage_start_col, "Sh Usages", source_url_root))
-        ret.extend(self.__create_file_dictionary_summary(self.cs_usages, usage_start_col, "C# Usages", source_url_root))
-
-
-        return ret
 
     def __create_usage_list(self, dictionary, start_col, source_url_root, file_path):
         ret = []
@@ -285,6 +253,7 @@ if type(args.add_usage_directory) == list:
         additional_usage_dirs.append(dir)
 
 
+# TODO need to search all dirs
 lines = run_grep(input_dir, "'#pragma\smulti_compile\|#pragma\sshader_feature'", shader_file_extensions)
 
 special_pragma_types = set()
