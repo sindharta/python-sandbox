@@ -249,13 +249,12 @@ for declaration_line_index, line in enumerate(lines):
 
 # convert to list
 csv_list = []
-error_keywords = set()
-sorted_keywords = sorted(pragma_shortcut_dict.keys())
-for pragma_type in sorted_keywords:
-    csv_list.append([pragma_type])
-    csv_list.extend(pragma_shortcut_dict[pragma_type].to_string_list(start_col=1, source_url_root= args.source_url_root))
+sorted_shortcuts = sorted(pragma_shortcut_dict.keys())
+for shortcut in sorted_shortcuts:
+    csv_list.append([shortcut])
+    csv_list.extend(pragma_shortcut_dict[shortcut].to_string_list(start_col=1, source_url_root= args.source_url_root))
 
-header_row = [[f"Keywords (Total: {len(pragma_shortcut_dict)})", "Path", "LineNo", "LineContents"]]
+header_row = [[f"Pragma Shortcut", "Path", "LineNo", "LineContents"]]
 write_to_csv(args.output, csv_list, header_row)
 
 # print
