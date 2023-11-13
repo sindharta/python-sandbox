@@ -176,15 +176,35 @@ class ShaderPragmaShortcut:
     def to_string_list(self, start_col, source_url_root):
         ret = []
 
-        # Shader Usages
+        # Shader Declarations
+        usages_type_item = "Decl."
         for j, shader_file_path in enumerate(self.declarations):
             shader_file_path_item = shader_file_path
 
-            usage_list = self.__create_usage_list(self.declarations[shader_file_path], start_col + 1, source_url_root, shader_file_path)
+            usage_list = self.__create_usage_list(self.declarations[shader_file_path], start_col + 3, source_url_root, shader_file_path)
             for usage in usage_list:
-                usage[start_col] = shader_file_path_item
+                usage[start_col] = usages_type_item
+                usage[start_col+2] = shader_file_path_item
                 ret.append(usage)
                 usages_type_item = shader_file_path_item = ""
+
+
+        # Declarations
+        usages_type_item = "Usages."
+        for j, keyword in enumerate(self.usages):
+            cur_dict = self.usages[keyword]
+            keyword_item = keyword
+
+            for k, shader_file_path in enumerate(cur_dict):
+                shader_file_path_item = shader_file_path
+
+                usage_list = self.__create_usage_list(cur_dict[shader_file_path], start_col + 3, source_url_root, shader_file_path)
+                for usage in usage_list:
+                    usage[start_col] = usages_type_item
+                    usage[start_col+1] = keyword_item
+                    usage[start_col+2] = shader_file_path_item
+                    ret.append(usage)
+                    usages_type_item = keyword_item = shader_file_path_item = ""
 
         return ret
 
@@ -351,11 +371,11 @@ for shortcut in sorted_shortcuts:
     csv_list.append([shortcut])
     csv_list.extend(pragma_shortcut_dict[shortcut].to_string_list(start_col=1, source_url_root= args.source_url_root))
 
-header_row = [['=HYPERLINK("https://docs.unity3d.com/2023.3/Documentation/Manual/SL-MultipleProgramVariants.html","Pragma Shortcut")', "Path", "LineNo", "LineContents"]]
+header_row = [['=HYPERLINK("https://docs.unity3d.com/2023.3/Documentation/Manual/SL-MultipleProgramVariants.html","Pragma Shortcut")', "Type", "Keyword", "Path", "LineNo", "LineContents"]]
 write_to_csv(args.output, csv_list, header_row)
 
 
 # print
-for line in csv_list:
-    print(line)
+#for line in csv_list:
+#    print(line)
 
