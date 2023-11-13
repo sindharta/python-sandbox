@@ -211,9 +211,14 @@ lines = run_grep([input_dir, *additional_usage_dirs], "'#pragma\smulti_compile\|
 
 special_pragma_types = set()
 
-# Usage:
+# Declarations:
 # multi_compile_fog -> A.hlsl -> [(line 10, actual_line), (line 20, actual_line)]
 #                      B.hlsl -> [(line 90, actual_line), (line 80, actual_line)]
+
+# Usage:
+# multi_compile_fog -> FOG_LINEAR -> A.hlsl -> [(line 10, actual_line), (line 20, actual_line)]
+#                      FOG_EXP -> B.hlsl -> [(line 90, actual_line), (line 100, actual_line)]
+#                      FOG_EXP2 -> B.hlsl -> [(line 500, actual_line), (line 400, actual_line)]
 
 pragma_shortcut_dict = {}
 
