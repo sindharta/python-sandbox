@@ -152,6 +152,8 @@ class ShaderPragmaShortcut:
     def __init__(self, shortcut):
         self.pragma_shortcut = shortcut
         self.declarations = {}
+        self.usages = {}
+
 
     def add_declaration(self, shader_file_path, line_number, line_contents):
         if shader_file_path not in self.declarations:
@@ -159,6 +161,15 @@ class ShaderPragmaShortcut:
         self.declarations[shader_file_path].append((line_number, line_contents))
 
     def add_usage(self, keyword, shader_file_path, line_number, line_contents):
+
+        if keyword not in self.usages:
+            self.usages[keyword] = {}
+
+        if shader_file_path not in self.usages[keyword]:
+            self.usages[keyword][shader_file_path] = list()
+
+        self.usages[keyword][shader_file_path].append((line_number, line_contents))
+
         pass
 
 
