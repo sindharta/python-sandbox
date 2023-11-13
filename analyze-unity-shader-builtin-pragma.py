@@ -114,13 +114,13 @@ class ShaderPragmaShortcut:
     def __init__(self, kw):
         self.keyword = kw
         self.declarations = {}
-        self.shader_usages = {}
+        self.usages = {}
         self.cs_usages = {}
 
     def add_usage(self, shader_file_path, line_number, line_contents):
-        if shader_file_path not in self.shader_usages:
-            cur_shader_keyword.shader_usages[shader_file_path] = list()
-        cur_shader_keyword.shader_usages[shader_file_path].append((line_number, line_contents))
+        if shader_file_path not in self.usages:
+            cur_shader_keyword.usages[shader_file_path] = list()
+        cur_shader_keyword.usages[shader_file_path].append((line_number, line_contents))
 
 
     def to_string_list(self, start_col, source_url_root):
@@ -145,10 +145,10 @@ class ShaderPragmaShortcut:
 
         # Shader Usages
         usages_type_item = "Sh Usages"
-        for j, shader_file_path in enumerate(self.shader_usages):
+        for j, shader_file_path in enumerate(self.usages):
             shader_file_path_item = shader_file_path
 
-            usage_list = self.__create_usage_list(self.shader_usages[shader_file_path], start_col + 3, source_url_root, shader_file_path)
+            usage_list = self.__create_usage_list(self.usages[shader_file_path], start_col + 3, source_url_root, shader_file_path)
             for usage in usage_list:
                 usage[start_col] = usages_type_item
                 usage[start_col + 2] = shader_file_path_item
