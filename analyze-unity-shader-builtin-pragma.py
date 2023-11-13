@@ -210,8 +210,7 @@ if type(args.add_usage_directory) == list:
         additional_usage_dirs.append(dir)
 
 
-# TODO need to search all dirs
-lines = run_grep(input_dir, "'#pragma\smulti_compile\|#pragma\sshader_feature'", shader_file_extensions)
+lines = run_grep([input_dir, *additional_usage_dirs], "'#pragma\smulti_compile\|#pragma\sshader_feature'", shader_file_extensions)
 
 special_pragma_types = set()
 
