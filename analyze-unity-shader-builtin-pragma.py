@@ -103,12 +103,9 @@ def split_path_and_line(input_dir, path_and_line):
 
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-# Definition:
-# _SHADOWS_SOFT -> multi_compile -> A.hlsl -> [(line 10, [line_contents] ), (line 20, [line_contents])]
-#                                   B.hlsl -> [(line 90, [line_contents] ), (line 80, [line_contents])]
-# Shader Usage / CS Usage:
-# _SHADOWS_SOFT -> A.hlsl -> [(line 10, [line_contents] ), (line 20, [line_contents] )]
-#                  B.hlsl -> [(line 90, [line_contents] ), (line 80, [line_contents] )]
+# Usage:
+# multi_compile_fog -> A.hlsl -> [(line 10, actual_line), (line 20, actual_line)]
+#                      B.hlsl -> [(line 90, actual_line), (line 80, actual_line)]
 
 class ShaderPragmaShortcut:
     def __init__(self, shortcut):
@@ -214,7 +211,7 @@ lines = run_grep([input_dir, *additional_usage_dirs], "'#pragma\smulti_compile\|
 
 special_pragma_types = set()
 
-# Declarations:
+# Usage:
 # multi_compile_fog -> A.hlsl -> [(line 10, actual_line), (line 20, actual_line)]
 #                      B.hlsl -> [(line 90, actual_line), (line 80, actual_line)]
 
