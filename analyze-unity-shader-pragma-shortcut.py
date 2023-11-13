@@ -151,22 +151,25 @@ pragma_shortcut_to_keywords_dict = {
 class ShaderPragmaShortcut:
     def __init__(self, shortcut):
         self.pragma_shortcut = shortcut
-        self.usages = {}
+        self.declarations = {}
 
     def add_declaration(self, shader_file_path, line_number, line_contents):
-        if shader_file_path not in self.usages:
-            self.usages[shader_file_path] = list()
-        self.usages[shader_file_path].append((line_number, line_contents))
+        if shader_file_path not in self.declarations:
+            self.declarations[shader_file_path] = list()
+        self.declarations[shader_file_path].append((line_number, line_contents))
+
+    def add_usage(self, keyword, shader_file_path, line_number, line_contents):
+        pass
 
 
     def to_string_list(self, start_col, source_url_root):
         ret = []
 
         # Shader Usages
-        for j, shader_file_path in enumerate(self.usages):
+        for j, shader_file_path in enumerate(self.declarations):
             shader_file_path_item = shader_file_path
 
-            usage_list = self.__create_usage_list(self.usages[shader_file_path], start_col + 1, source_url_root, shader_file_path)
+            usage_list = self.__create_usage_list(self.declarations[shader_file_path], start_col + 1, source_url_root, shader_file_path)
             for usage in usage_list:
                 usage[start_col] = shader_file_path_item
                 ret.append(usage)
@@ -300,7 +303,33 @@ for declaration_line_index, line in enumerate(lines):
 
     cur_shortcut.add_declaration(shader_file_path, declaration_line_number, temp_contents[start_line_no: end_line_no])
 
-    continue
+
+# Find Usages
+for shortcut in pragma_shortcut_dict:
+    if not shortcut in pragma_shortcut_to_keywords_dict:
+        print(f"Invalid pragma shortcut found: {shortcut}")
+        exit()
+
+
+    for keyword in pragma_shortcut_to_keywords_dict[shortcut]:
+
+        shader_usage_lines = run_grep([input_dir, *additional_usage_dirs], keyword, shader_file_extensions, True)
+
+        for usage_line in shader_usage_lines:
+
+            usage_tokens = usage_line.rsplit(',', 1)
+
+            (rel_usage_path, usage_line_number, rem_token_0) = split_path_and_line(input_dir, usage_tokens[0])
+
+            if temp_path != rel_usage_path:
+                temp_contents = read_file_all_lines(f"{input_dir}/{rel_usage_path}")
+                temp_path = rel_usage_path
+
+            start_line_no = usage_line_number - num_surrounding_usage_lines - 1
+            end_line_no   = usage_line_number + num_surrounding_usage_lines
+
+            pragma_shortcut_dict[shortcut].add_usage(keyword, rel_usage_path, usage_line_number, temp_contents[start_line_no: end_line_no])
+
 
 
 
