@@ -376,6 +376,6 @@ write_to_csv(args.output, csv_list, header_row)
 
 
 # print
-#for line in csv_list:
-#    print(line)
+for line in csv_list:
+    print(line)
 
