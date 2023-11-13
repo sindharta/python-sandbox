@@ -104,8 +104,8 @@ def split_path_and_line(input_dir, path_and_line):
 
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-shortcut_to_keywords_dict = {
-    
+pragma_shortcut_to_keywords_dict = {
+
     "multi_compile_fwdbase": [
         "DIRECTIONAL", "LIGHTMAP_ON", "DIRLIGHTMAP_COMBINED",
         "DYNAMICLIGHTMAP_ON", "SHADOWS_SCREEN", "SHADOWS_SHADOWMASK",
