@@ -125,14 +125,12 @@ class ShaderPragmaShortcut:
         ret = []
 
         # Shader Usages
-        usages_type_item = "Sh Usages"
         for j, shader_file_path in enumerate(self.usages):
             shader_file_path_item = shader_file_path
 
-            usage_list = self.__create_usage_list(self.usages[shader_file_path], start_col + 3, source_url_root, shader_file_path)
+            usage_list = self.__create_usage_list(self.usages[shader_file_path], start_col + 1, source_url_root, shader_file_path)
             for usage in usage_list:
-                usage[start_col] = usages_type_item
-                usage[start_col + 2] = shader_file_path_item
+                usage[start_col] = shader_file_path_item
                 ret.append(usage)
                 usages_type_item = shader_file_path_item = ""
 
