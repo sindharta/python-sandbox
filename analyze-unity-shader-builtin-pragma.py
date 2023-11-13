@@ -215,7 +215,7 @@ special_pragma_types = set()
 # multi_compile_fog -> A.hlsl -> [(line 10, actual_line), (line 20, actual_line)]
 #                      B.hlsl -> [(line 90, actual_line), (line 80, actual_line)]
 
-pragma_dict = {}
+pragma_shortcut_dict = {}
 keywords_grepped = set()
 
 for declaration_line_index, line in enumerate(lines):
@@ -237,33 +237,25 @@ for declaration_line_index, line in enumerate(lines):
         continue
 
     #print(keyword, index, keyword_tokens_in_line)
-    if not pragma_type in pragma_dict:
-        pragma_dict[pragma_type] = ShaderPragmaShortcut(pragma_type)
+    if not pragma_type in pragma_shortcut_dict:
+        pragma_shortcut_dict[pragma_type] = ShaderPragmaShortcut(pragma_type)
 
-    cur_shader_keyword = pragma_dict[pragma_type]
-
-
-
-    cur_shader_keyword.add_usage(shader_file_path, declaration_line_number, usage_line_content)
-
-    print(shader_file_path, usage_line_content)
+    cur_shortcut = pragma_shortcut_dict[pragma_type]
+    cur_shortcut.add_usage(shader_file_path, declaration_line_number, usage_line_content)
 
     continue
-
-
-
 
 
 
 # convert to list
 csv_list = []
 error_keywords = set()
-sorted_keywords = sorted(pragma_dict.keys())
+sorted_keywords = sorted(pragma_shortcut_dict.keys())
 for pragma_type in sorted_keywords:
     csv_list.append([pragma_type])
-    csv_list.extend(pragma_dict[pragma_type].to_string_list(start_col=1, source_url_root= args.source_url_root))
+    csv_list.extend(pragma_shortcut_dict[pragma_type].to_string_list(start_col=1, source_url_root= args.source_url_root))
 
-header_row = [[f"Keywords (Total: {len(pragma_dict)})","Path", "LineNo", "LineContents"]]
+header_row = [[f"Keywords (Total: {len(pragma_shortcut_dict)})", "Path", "LineNo", "LineContents"]]
 write_to_csv(args.output, csv_list, header_row)
 
 # print
