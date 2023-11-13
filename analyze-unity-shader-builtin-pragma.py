@@ -117,8 +117,8 @@ class ShaderPragmaShortcut:
 
     def add_usage(self, shader_file_path, line_number, line_contents):
         if shader_file_path not in self.usages:
-            cur_shader_keyword.usages[shader_file_path] = list()
-        cur_shader_keyword.usages[shader_file_path].append((line_number, line_contents))
+            self.usages[shader_file_path] = list()
+        self.usages[shader_file_path].append((line_number, line_contents))
 
 
     def to_string_list(self, start_col, source_url_root):
