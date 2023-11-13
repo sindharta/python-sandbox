@@ -1,5 +1,5 @@
 # Example of how to use:
-# py analyze-unity-shader-builtin-pragma.py -d <package_path>/com.unity.render-pipelines.universal@15.0.6 -s 2 -r https://github.com/Unity-Technologies/Graphics/blob/2023.1/staging/Packages/com.unity.render-pipelines.universal
+# py analyze-unity-shader-pragma-shortcut.py -d <package_path>/com.unity.render-pipelines.universal@15.0.6 -s 2 -r https://github.com/Unity-Technologies/Graphics/blob/2023.1/staging/Packages/com.unity.render-pipelines.universal
 
 from argparse import ArgumentParser
 import csv
