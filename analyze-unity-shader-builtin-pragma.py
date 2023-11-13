@@ -111,8 +111,8 @@ def split_path_and_line(input_dir, path_and_line):
 #                  B.hlsl -> [(line 90, [line_contents] ), (line 80, [line_contents] )]
 
 class ShaderPragmaShortcut:
-    def __init__(self, kw):
-        self.keyword = kw
+    def __init__(self, shortcut):
+        self.pragma_shortcut = shortcut
         self.usages = {}
 
     def add_usage(self, shader_file_path, line_number, line_contents):
