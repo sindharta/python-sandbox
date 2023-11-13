@@ -153,7 +153,7 @@ class ShaderPragmaShortcut:
         self.pragma_shortcut = shortcut
         self.usages = {}
 
-    def add_usage(self, shader_file_path, line_number, line_contents):
+    def add_declaration(self, shader_file_path, line_number, line_contents):
         if shader_file_path not in self.usages:
             self.usages[shader_file_path] = list()
         self.usages[shader_file_path].append((line_number, line_contents))
@@ -298,7 +298,7 @@ for declaration_line_index, line in enumerate(lines):
     start_line_no = declaration_line_number - num_surrounding_usage_lines - 1
     end_line_no = declaration_line_number + num_surrounding_usage_lines
 
-    cur_shortcut.add_usage(shader_file_path, declaration_line_number, temp_contents[start_line_no: end_line_no])
+    cur_shortcut.add_declaration(shader_file_path, declaration_line_number, temp_contents[start_line_no: end_line_no])
 
     continue
 
