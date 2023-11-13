@@ -216,7 +216,9 @@ special_pragma_types = set()
 #                      B.hlsl -> [(line 90, actual_line), (line 80, actual_line)]
 
 pragma_shortcut_dict = {}
-keywords_grepped = set()
+
+temp_path = ""
+temp_contents = []
 
 for declaration_line_index, line in enumerate(lines):
 
@@ -241,7 +243,16 @@ for declaration_line_index, line in enumerate(lines):
         pragma_shortcut_dict[pragma_type] = ShaderPragmaShortcut(pragma_type)
 
     cur_shortcut = pragma_shortcut_dict[pragma_type]
-    cur_shortcut.add_usage(shader_file_path, declaration_line_number, usage_line_content)
+
+    # read multiple lines
+    if temp_path != shader_file_path:
+        temp_contents = read_file_all_lines(f"{input_dir}/{shader_file_path}")
+        temp_path = shader_file_path
+
+    start_line_no = declaration_line_number - num_surrounding_usage_lines - 1
+    end_line_no = declaration_line_number + num_surrounding_usage_lines
+
+    cur_shortcut.add_usage(shader_file_path, declaration_line_number, temp_contents[start_line_no: end_line_no])
 
     continue
 
