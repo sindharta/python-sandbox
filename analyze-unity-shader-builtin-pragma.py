@@ -117,7 +117,7 @@ class ShaderPragmaShortcut:
         self.shader_usages = {}
         self.cs_usages = {}
 
-    def add_shader_usage(self, shader_file_path, line_number, line_contents):
+    def add_usage(self, shader_file_path, line_number, line_contents):
         if shader_file_path not in self.shader_usages:
             cur_shader_keyword.shader_usages[shader_file_path] = list()
         cur_shader_keyword.shader_usages[shader_file_path].append((line_number, line_contents))
@@ -291,7 +291,7 @@ for declaration_line_index, line in enumerate(lines):
 
 
 
-    cur_shader_keyword.add_shader_usage(shader_file_path, declaration_line_number, usage_line_content)
+    cur_shader_keyword.add_usage(shader_file_path, declaration_line_number, usage_line_content)
 
     print(shader_file_path, usage_line_content)
 
