@@ -265,7 +265,7 @@ for shortcut in sorted_shortcuts:
     csv_list.append([shortcut])
     csv_list.extend(pragma_shortcut_dict[shortcut].to_string_list(start_col=1, source_url_root= args.source_url_root))
 
-header_row = [[=HYPERLINK('https://docs.unity3d.com/2023.3/Documentation/Manual/SL-MultipleProgramVariants.html','Pragma Shortcut'), "Path", "LineNo", "LineContents"]]
+header_row = [["=HYPERLINK('https://docs.unity3d.com/2023.3/Documentation/Manual/SL-MultipleProgramVariants.html','Pragma Shortcut')", "Path", "LineNo", "LineContents"]]
 write_to_csv(args.output, csv_list, header_row)
 
 
