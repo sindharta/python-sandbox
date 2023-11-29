@@ -130,13 +130,13 @@ class ShaderKeyword:
 
     def add_shader_usage(self, shader_file_path, line_number, line_contents):
         if shader_file_path not in self.shader_usages:
-            cur_shader_keyword.shader_usages[shader_file_path] = list()
-        cur_shader_keyword.shader_usages[shader_file_path].append((line_number, line_contents))
+            self.shader_usages[shader_file_path] = list()
+        self.shader_usages[shader_file_path].append((line_number, line_contents))
 
     def add_cs_usage(self, shader_file_path, line_number, line_contents):
         if shader_file_path not in self.cs_usages:
-            cur_shader_keyword.cs_usages[shader_file_path] = list()
-        cur_shader_keyword.cs_usages[shader_file_path].append((line_number, line_contents))
+            self.cs_usages[shader_file_path] = list()
+        self.cs_usages[shader_file_path].append((line_number, line_contents))
 
     def validate(self):
 
