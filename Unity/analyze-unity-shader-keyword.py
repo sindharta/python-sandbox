@@ -7,27 +7,7 @@ import os
 import subprocess
 import re
 
-from shin_unity import is_special_pragma_type, write_to_csv, read_file_all_lines, run_grep
-
-# --------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-# file_path: ex: <input_dir>/Shaders/2D/Light2D.shader:20:
-# returns (relative path, line:number, remaining)
-def split_path_and_line(input_dir, path_and_line):
-
-    common_path = input_dir
-    find_rel_path = not path_and_line.startswith(input_dir)
-    if find_rel_path:
-        common_path = os.path.commonpath([input_dir, path_and_line]).replace("\\","/")
-
-    tokens = path_and_line.replace(common_path,"")[1:].split(':') # use local_path relative to input_dir
-    rel_path = tokens[0]
-
-    #tokens[0] is not located under input_dir. Find its relative path
-    if (find_rel_path):
-        rel_path = os.path.relpath(common_path + "/" + tokens[0], input_dir).replace("\\","/")
-
-    return (rel_path, int(tokens[1]), " ".join(tokens[2:]))
+from shin_unity import is_special_pragma_type, write_to_csv, read_file_all_lines, split_path_and_line, run_grep
 
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
