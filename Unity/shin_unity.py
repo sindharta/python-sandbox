@@ -1,5 +1,5 @@
 
-def is_special_pragma_type(token):
+def is_pragma_shortcut(token):
     if (token == "multi_compile"):
         return False
 

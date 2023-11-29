@@ -5,7 +5,7 @@ from argparse import ArgumentParser
 import os
 import re
 
-from shin_unity import is_special_pragma_type, write_to_csv, read_file_all_lines, split_path_and_line, run_grep
+from shin_unity import is_pragma_shortcut, write_to_csv, read_file_all_lines, split_path_and_line, run_grep
 
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -246,7 +246,7 @@ for declaration_line_index, line in enumerate(lines):
 
     pragma_type = tokens[1]
 
-    if is_special_pragma_type(pragma_type):
+    if is_pragma_shortcut(pragma_type):
         special_pragma_types.add(pragma_type)
         continue
 
