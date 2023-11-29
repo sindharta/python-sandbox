@@ -2,13 +2,9 @@
 # py analyze-unity-shader-pragma-shortcut.py -d <package_path>/com.unity.render-pipelines.universal@15.0.6 -s 2 -r https://github.com/Unity-Technologies/Graphics/blob/2023.1/staging/Packages/com.unity.render-pipelines.universal
 
 from argparse import ArgumentParser
-import csv
 import os
-import subprocess
 import re
 from shin_unity import is_special_pragma_type, write_to_csv, read_file_all_lines, split_path_and_line, run_grep
-
-# --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------
