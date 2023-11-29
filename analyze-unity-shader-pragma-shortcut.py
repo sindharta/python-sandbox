@@ -31,6 +31,9 @@ def is_special_pragma_type(token):
     if (token == "shader_feature_local"):
         return False
 
+    if (token == "shader_feature_local_vertex"):
+        return False
+
     if (token == "shader_feature_local_fragment"):
         return False
 
