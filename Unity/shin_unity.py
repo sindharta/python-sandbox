@@ -29,3 +29,15 @@ def is_special_pragma_type(token):
 
     return True
 
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+import csv
+def write_to_csv(outputFileName, dataList, header_rows = []):
+    with open(outputFileName, 'w', newline='', encoding='utf-8') as f:
+        writer = csv.writer(f)
+        for h in header_rows:
+            writer.writerow(h)
+
+        for d in dataList:
+            writer.writerow(d)
+    print(f"Data written to {outputFileName}")
